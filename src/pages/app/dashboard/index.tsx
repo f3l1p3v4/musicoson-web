@@ -2,6 +2,7 @@
 
 import { Call } from './call'
 import { Frequency } from './frequency'
+import { FrequencyStudent } from './frequency-student'
 // import { Task } from './task'
 // import { TaskStudent } from './task-student'
 
@@ -15,6 +16,7 @@ export function Dashboard() {
         <div className="grid grid-cols-4 gap-4">
           {/* <Task /> */}
           <Call />
+          <FrequencyStudent />
           {/* <TaskStudent /> */}
           <Frequency />
         </div>

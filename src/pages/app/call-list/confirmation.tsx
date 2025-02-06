@@ -16,9 +16,6 @@ export function Confirmation() {
           Aluno: Antoni Ferreira da Silva
         </DialogTitle>
         <DialogDescription className="text-center">Dia 05/02</DialogDescription>
-        <DialogDescription className="text-center">
-          Revisar exerc de Respiração(1º Série) e Solfejo
-        </DialogDescription>
       </DialogHeader>
 
       <div className="flex justify-between gap-2">

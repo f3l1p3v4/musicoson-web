@@ -8,6 +8,7 @@ import { CallList } from './pages/app/call-list'
 import { ClassPlan } from './pages/app/class-plan'
 import { Dashboard } from './pages/app/dashboard'
 import { Frequency } from './pages/app/frequency'
+import { FrequencyStudent } from './pages/app/frequency-student'
 import { Perfil } from './pages/app/perfil'
 import { PerfilEdit } from './pages/app/perfil-edit'
 import { ProgramMinimum } from './pages/app/program-minimum'
@@ -63,6 +64,10 @@ export const router = createBrowserRouter([
       {
         path: '/frequency',
         element: <Frequency />,
+      },
+      {
+        path: '/frequency-student',
+        element: <FrequencyStudent />,
       },
     ],
   },
