@@ -29,16 +29,14 @@ export function AlertFrequency() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <p className="text-lg font-bold text-gray-800">
-                Antoni Ferreira da Silva
+              <p className="text-lg font-bold text-red-600">
+                Antoni Ferreira da Silva (Clarinete)
               </p>
-              <p className="text-sm text-gray-600">Clarinete</p>
               <div className="mt-4 space-y-1">
-                <p className="text-sm font-semibold text-red-600">5 Faltas</p>
-                <p className="text-sm font-semibold text-red-600">
-                  3 Tarefas Pendentes
+                <p className="text-sm font-medium text-red-600">
+                  Faltas: 5 | Tarefas: 3
                 </p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-red-600">
                   Ultima Mensagem Enviada dia 25/01/2024 às 10:00 AM
                 </p>
               </div>
@@ -58,17 +56,15 @@ export function AlertFrequency() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <p className="text-lg font-bold text-gray-800">
-                João Pedro Valdez
+              <p className="text-lg font-bold text-red-600">
+                João Pedro Valdez (Violino)
               </p>
-              <p className="text-sm text-gray-600">Violino</p>
               <div className="mt-4 space-y-1">
-                <p className="text-sm font-semibold text-red-600">5 Faltas</p>
-                <p className="text-sm font-semibold text-red-600">
-                  3 Tarefas Pendentes
+                <p className="text-sm font-medium text-red-600">
+                  Faltas: 5 | Tarefas: 3
                 </p>
-                <p className="text-sm text-gray-600">
-                  Nenhuma Mensagem Enviada
+                <p className="text-sm text-red-600">
+                  Ultima Mensagem Enviada dia 25/01/2024 às 10:00 AM
                 </p>
               </div>
             </CardContent>

@@ -1,16 +1,24 @@
+'use client'
+
 import { TableCell, TableRow } from '@/components/ui/table'
 
-// interface OrderTableRowProps {}
+interface ClassPlanTableRowProps {
+  plan: {
+    id: string
+    date: string
+    subject: string
+    page: string
+    exercise: string
+  }
+}
 
-export function ClassPlanTableRow() {
+export function ClassPlanTableRow({ plan }: ClassPlanTableRowProps) {
   return (
     <TableRow>
-      <TableCell className="font-medium">18/02</TableCell>
-      <TableCell className="text-muted-foreground">
-        Música, Ritmo(Dif de som e Ruídos) - Notas musicais
-      </TableCell>
-      <TableCell className="font-medium">7</TableCell>
-      <TableCell className="font-medium">1 ao 4</TableCell>
+      <TableCell>{new Date(plan.date).toLocaleDateString()}</TableCell>
+      <TableCell>{plan.subject}</TableCell>
+      <TableCell>{plan.page}</TableCell>
+      <TableCell>{plan.exercise}</TableCell>
     </TableRow>
   )
 }

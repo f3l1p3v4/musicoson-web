@@ -1,12 +1,6 @@
-'use  client'
+'use client'
 
-import {
-  Card,
-  CardContent,
-  // CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -15,17 +9,23 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-// import { ClassPlanTableFilters } from './class-plan-table-filter'
 import { ClassPlanTableRow } from './class-plan-table-row'
 
-export function ClassPlanCard() {
+interface ClassPlanCardProps {
+  plans: {
+    id: string
+    date: string
+    subject: string
+    page: string
+    exercise: string
+  }[]
+}
+
+export function ClassPlanCard({ plans }: ClassPlanCardProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-2xl mb-6">Grupo 01</CardTitle>
-        {/* <CardDescription className="text-black">
-          <ClassPlanTableFilters />
-        </CardDescription> */}
+        <CardTitle className="font-2xl mb-6">Plano de Aula</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
         <Table>
@@ -34,13 +34,13 @@ export function ClassPlanCard() {
               <TableHead>Data</TableHead>
               <TableHead>Assunto</TableHead>
               <TableHead>Pág</TableHead>
-              <TableHead>Ex</TableHead>
+              <TableHead>Exercício</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {Array.from({ length: 10 }).map((_, i) => {
-              return <ClassPlanTableRow key={i} />
-            })}
+            {plans.map((plan) => (
+              <ClassPlanTableRow key={plan.id} plan={plan} />
+            ))}
           </TableBody>
         </Table>
       </CardContent>

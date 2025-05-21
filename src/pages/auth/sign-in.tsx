@@ -1,11 +1,13 @@
+import axios from 'axios'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useAuthStore } from '@/store/authStore'
 
 import LogoImg from '../../assets/logo.png'
 
@@ -19,6 +21,10 @@ const signInForm = z.object({
 type SignInForm = z.infer<typeof signInForm>
 
 export function SignIn() {
+  const { setToken, setUserRole, setUserName, setUserInstrument, setUserId } =
+    useAuthStore()
+  const navigate = useNavigate()
+
   const {
     register,
     handleSubmit,
@@ -27,16 +33,23 @@ export function SignIn() {
 
   async function handleSignIn(data: SignInForm) {
     try {
+      const response = await axios.post(
+        'http://localhost:3333/users/login',
+        data,
+      )
+
+      const { token } = response.data
+
+      setToken(token.token)
+      setUserRole(token.role)
+      setUserName(token.name)
+      setUserInstrument(token.instrument)
+      setUserId(token.id)
+
       await new Promise((resolve) => setTimeout(resolve, 2000))
 
-      toast.success('Enviamos um link de autenticação para seu e-mail.', {
-        action: {
-          label: 'Reenviar',
-          onClick: () => {
-            handleSignIn(data)
-          },
-        },
-      })
+      toast.success('Login realizado com sucesso!')
+      navigate('/')
     } catch (error) {
       toast.error('Credenciais inválidas.')
     }

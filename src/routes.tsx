@@ -1,4 +1,6 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
+
+import { useAuthStore } from '@/store/authStore'
 
 import { AppLayout } from './pages/_layouts/app'
 import { AuthLayout } from './pages/_layouts/auth'
@@ -18,6 +20,24 @@ import { Warnings } from './pages/app/warnings'
 import { SignIn } from './pages/auth/sign-in'
 import { SignUp } from './pages/auth/sign-up'
 
+type UserRole = 'INSTRUCTOR' | 'STUDENT' | 'ADMIN'
+
+interface ProtectedRouteProps {
+  children: JSX.Element
+  roleRequired?: UserRole
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
+  roleRequired,
+}) => {
+  const { token, role } = useAuthStore()
+  if (!token) return <Navigate to="/sign-in" />
+  if (roleRequired && role !== roleRequired) return <Navigate to="/" />
+
+  return children
+}
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -27,48 +47,22 @@ export const router = createBrowserRouter([
       { path: '/', element: <Dashboard /> },
       {
         path: '/users',
-        element: <Users />,
+        element: (
+          <ProtectedRoute roleRequired="INSTRUCTOR">
+            <Users />
+          </ProtectedRoute>
+        ),
       },
-      {
-        path: '/perfil',
-        element: <Perfil />,
-      },
-      {
-        path: '/perfil-edit',
-        element: <PerfilEdit />,
-      },
-      {
-        path: '/program-minimum',
-        element: <ProgramMinimum />,
-      },
-      {
-        path: '/class-plan',
-        element: <ClassPlan />,
-      },
-      {
-        path: '/tasks',
-        element: <Tasks />,
-      },
-      {
-        path: '/call-list',
-        element: <CallList />,
-      },
-      {
-        path: '/warnings',
-        element: <Warnings />,
-      },
-      {
-        path: '/alert-frequency',
-        element: <AlertFrequency />,
-      },
-      {
-        path: '/frequency',
-        element: <Frequency />,
-      },
-      {
-        path: '/frequency-student',
-        element: <FrequencyStudent />,
-      },
+      { path: '/perfil', element: <Perfil /> },
+      { path: '/perfil-edit', element: <PerfilEdit /> },
+      { path: '/program-minimum', element: <ProgramMinimum /> },
+      { path: '/class-plan', element: <ClassPlan /> },
+      { path: '/tasks', element: <Tasks /> },
+      { path: '/call-list', element: <CallList /> },
+      { path: '/warnings', element: <Warnings /> },
+      { path: '/alert-frequency', element: <AlertFrequency /> },
+      { path: '/frequency/:studentId', element: <Frequency /> },
+      { path: '/frequency-student', element: <FrequencyStudent /> },
     ],
   },
   {
@@ -76,10 +70,7 @@ export const router = createBrowserRouter([
     element: <AuthLayout />,
     children: [
       { path: '/sign-in', element: <SignIn /> },
-      {
-        path: '/sign-up',
-        element: <SignUp />,
-      },
+      { path: '/sign-up', element: <SignUp /> },
     ],
   },
 ])

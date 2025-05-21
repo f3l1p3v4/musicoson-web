@@ -1,61 +1,77 @@
 'use client'
+
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale/pt-BR'
+import { useEffect } from 'react'
+import { useParams } from 'react-router-dom'
+
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useAuthStore } from '@/store/authStore'
+import { useStudentHistoryStore } from '@/store/studentHistoryStore'
 
 export function Frequency() {
+  const { studentId: studentIdFromParams } = useParams()
+  const { token } = useAuthStore()
+  const { studentHistory, fetchStudentHistory } = useStudentHistoryStore()
+
+  useEffect(() => {
+    if (!token) return
+
+    if (studentIdFromParams) {
+      fetchStudentHistory(studentIdFromParams, token)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, studentIdFromParams])
+
   return (
     <section className="grid gap-2">
-      <h1 className="mb-6 text-center text-3xl font-bold">Lista de Chamada</h1>
-      <Card className="w-full">
-        <CardHeader className="flex-row items-center justify-between space-y-0 pb-1">
-          <CardTitle className="text-sm font-medium">05/02/2022</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-1">
-          <p className="mt-1 text-xs font-bold">
-            Aula 01 - Música, Ritmo(dif de Som e Ruidos) - Notas musicais
-          </p>
-          <p className="mt-2 text-xs">PG 7</p>
-          <section className="flex gap-2">
-            <Badge variant="default" className="bg-red-500">
-              Ausente
-            </Badge>
-          </section>
-        </CardContent>
-      </Card>
+      <h1 className="mb-6 text-center text-3xl font-bold">
+        Frequência nas Aulas
+      </h1>
 
-      <Card className="w-full">
-        <CardHeader className="flex-row items-center justify-between space-y-0 pb-1">
-          <CardTitle className="text-sm font-medium">12/02/2022</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-1">
-          <p className="mt-1 text-xs font-bold">
-            Linguagem ritmica -ritmo uniforme - Figuras musicais
-          </p>
-          <p className="mt-2 text-xs">PG 7</p>
-          <section className="flex gap-2">
-            <Badge variant="default" className="bg-green-500">
-              Presente
-            </Badge>
-          </section>
-        </CardContent>
-      </Card>
-
-      <Card className="w-full">
-        <CardHeader className="flex-row items-center justify-between space-y-0 pb-1">
-          <CardTitle className="text-sm font-medium">19/02/2022</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-1">
-          <p className="mt-1 text-xs font-bold">
-            Aula 01 - Música, Ritmo(dif de Som e Ruidos) - Notas musicais
-          </p>
-          <p className="mt-2 text-xs">PG 8 | Exercício 1 ao 4</p>
-          <section className="flex gap-2">
-            <Badge variant="default" className="bg-red-500">
-              Ausente
-            </Badge>
-          </section>
-        </CardContent>
-      </Card>
+      {studentHistory.length > 0 ? (
+        studentHistory.map((item) => (
+          <Card key={item.id} className="w-full">
+            <CardHeader className="flex-row items-center justify-between space-y-0 pb-1">
+              <CardTitle className="text-sm font-medium">
+                {format(new Date(item.date), "dd 'de' MMMM 'de' yyyy", {
+                  locale: ptBR,
+                })}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-1">
+              <p className="mt-1 text-xs font-bold">{item.subject}</p>
+              <p className="mt-2 text-xs">PG {item.page}</p>
+              <p className="mt-2 text-xs">Exercício: {item.exercise}</p>
+              <section className="flex gap-2">
+                {item.attendance ? (
+                  <Badge
+                    variant="default"
+                    className={
+                      item.attendance.status === 'PRESENT'
+                        ? 'bg-green-500'
+                        : 'bg-red-500'
+                    }
+                  >
+                    {item.attendance.status === 'PRESENT'
+                      ? 'Presente'
+                      : 'Ausente'}
+                  </Badge>
+                ) : (
+                  <Badge variant="default" className="bg-gray-500">
+                    Sem registro
+                  </Badge>
+                )}
+              </section>
+            </CardContent>
+          </Card>
+        ))
+      ) : (
+        <p className="text-center text-gray-500">
+          Nenhum histórico de aulas encontrado.
+        </p>
+      )}
     </section>
   )
 }

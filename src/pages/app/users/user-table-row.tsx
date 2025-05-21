@@ -4,11 +4,31 @@
 // import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
 
+interface User {
+  id: string
+  name: string
+  instrument?: string
+  group?: string
+  role: string
+  email: string
+  phone?: string
+}
+
+interface Props {
+  user: User
+}
+
 // import { UserDetails } from './user-details'
 
 // interface OrderTableRowProps {}
 
-export function UserTableRow() {
+export function UserTableRow({ user }: Props) {
+  const roleMap: Record<string, string> = {
+    admin: 'Administrador',
+    instructor: 'Instrutor',
+    student: 'Aluno',
+  }
+
   return (
     <TableRow>
       {/* <TableCell>
@@ -23,17 +43,12 @@ export function UserTableRow() {
           <UserDetails />
         </Dialog>
       </TableCell> */}
-      <TableCell className="font-medium">Felipe Valdez</TableCell>
-      <TableCell className="text-muted-foreground">Viola</TableCell>
-      <TableCell>
-        <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-primary" />
-          <span className="font-medium text-muted-foreground">Grupo 01</span>
-        </div>
-      </TableCell>
-      <TableCell className="font-medium">Instrutor</TableCell>
-      <TableCell className="font-medium">felipe@teste.com</TableCell>
-      <TableCell className="font-medium">(67) 91234-1234</TableCell>
+      <TableCell>{user.name}</TableCell>
+      <TableCell>{user.instrument || '-'}</TableCell>
+      <TableCell>{user.group || '-'}</TableCell>
+      <TableCell>{roleMap[user.role] || user.role}</TableCell>
+      <TableCell>{user.email}</TableCell>
+      <TableCell>{user.phone || '-'}</TableCell>
     </TableRow>
   )
 }
