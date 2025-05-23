@@ -10,12 +10,8 @@ import { useAttendanceStore } from '@/store/callListStore'
 import { Confirmation } from './confirmation'
 
 export function CallList() {
-  const {
-    students,
-    fetchStudentsAttendance,
-    markAttendance,
-    updateAttendance,
-  } = useAttendanceStore()
+  const { students, fetchStudentsAttendance, markAttendance } =
+    useAttendanceStore()
   const { token, id } = useAuthStore()
   const [selectedStudent, setSelectedStudent] = useState<{
     id: string
@@ -24,8 +20,6 @@ export function CallList() {
     instrument: string
     studentAttendance: { id: string; date: string; status: string }[]
   } | null>(null)
-
-  // Removed unused 'open' state
 
   useEffect(() => {
     if (token) {
@@ -43,7 +37,7 @@ export function CallList() {
     setSelectedStudent({
       ...student,
       studentAttendance: student.studentAttendance.map((attendance, index) => ({
-        id: `${student.id}-${index}`, // Generate a unique ID if missing
+        id: `${student.id}-${index}`,
         ...attendance,
       })),
     })
@@ -105,16 +99,13 @@ export function CallList() {
                 student={{
                   id: selectedStudent.id,
                   name: selectedStudent.name,
-                  attendanceId: selectedStudent.studentAttendance[0]?.id, // ou o último do dia
+                  attendanceId: selectedStudent.studentAttendance[0]?.id,
                   currentStatus: selectedStudent.studentAttendance[0]?.status,
                 }}
                 instructorId={id || ''}
                 token={token || ''}
                 markAttendance={(data) =>
                   markAttendance({ ...data, token: token || '' })
-                }
-                updateAttendance={(data) =>
-                  updateAttendance({ ...data, token: token || '' })
                 }
                 onSuccessClose={() => setSelectedStudent(null)}
               />

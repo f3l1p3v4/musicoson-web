@@ -27,14 +27,6 @@ interface ConfirmationProps {
     responseData: { message: string; attendanceId?: string }
     responseStatus: number
   }>
-  updateAttendance: (data: {
-    attendanceId: string
-    status: string
-  }) => Promise<{
-    success: boolean
-    responseData: { message: string }
-    responseStatus: number
-  }>
   onSuccessClose: () => void
 }
 
@@ -42,27 +34,9 @@ export function Confirmation({
   student,
   instructorId,
   markAttendance,
-  updateAttendance,
   onSuccessClose,
 }: ConfirmationProps) {
   async function handleAttendance(status: string) {
-    // Se já tem presença marcada e o status é diferente, atualiza
-    if (student.attendanceId && student.currentStatus !== status) {
-      const response = await updateAttendance({
-        attendanceId: student.id,
-        status,
-      })
-
-      if (response.success) {
-        toast.success('Presença atualizada com sucesso')
-        onSuccessClose()
-      } else {
-        toast.error(response.responseData.message)
-      }
-      return
-    }
-
-    // Se não tem presença marcada, registra
     const response = await markAttendance({
       date: new Date().toISOString(),
       studentId: student.id,
@@ -70,11 +44,8 @@ export function Confirmation({
       status,
     })
 
-    if (response.success && response.responseStatus === 201) {
+    if (response.success) {
       toast.success(response.responseData.message)
-      onSuccessClose()
-    } else if (response.success && response.responseStatus === 200) {
-      toast.error(response.responseData.message)
       onSuccessClose()
     } else {
       toast.error(response.responseData.message)
