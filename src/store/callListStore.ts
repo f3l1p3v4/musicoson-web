@@ -84,12 +84,44 @@ export const useAttendanceStore = create<AttendanceStore>((set) => ({
       if (!response.ok) throw new Error('Erro ao marcar presença')
 
       const responseData = await response.json()
-
       const responseStatus = response.status
+
+      // Atualiza o estado de students após registrar a chamada
+      set((state) => {
+        if (!state.students) return { students: null }
+
+        const updatedStudents = state.students.map((student) => {
+          if (student.id === studentId) {
+            const alreadyExists = student.studentAttendance.some(
+              (att) => att.date === date
+            )
+
+            // Se já existe uma presença para essa data, não faz nada
+            if (alreadyExists) return student
+
+            const newAttendance = {
+              date,
+              status,
+              classNumber: responseData.classNumber,
+            }
+
+            return {
+              ...student,
+              studentAttendance: [
+                ...(student.studentAttendance ?? []),
+                newAttendance,
+              ],
+            }
+          }
+          return student
+        })
+
+        return { students: updatedStudents }
+      })
+
 
       return { success: true, responseData, responseStatus }
     } catch (error) {
-      console.error('Erro ao registrar chamada:', error)
       return {
         success: false,
         responseData: { message: 'Erro ao registrar chamada' },
