@@ -24,6 +24,11 @@ export function Frequency() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, studentIdFromParams])
 
+  function parseAsUTC(dateString: string) {
+    const [year, month, day] = dateString.split('T')[0].split('-').map(Number)
+    return new Date(Date.UTC(year, month - 1, day))
+  }
+
   return (
     <section className="grid gap-2">
       <h1 className="mb-6 text-center text-3xl font-bold">
@@ -35,7 +40,7 @@ export function Frequency() {
           <Card key={item.id} className="w-full">
             <CardHeader className="flex-row items-center justify-between space-y-0 pb-1">
               <CardTitle className="text-sm font-medium">
-                {format(new Date(item.date), "dd 'de' MMMM 'de' yyyy", {
+                {format(parseAsUTC(item.date), "dd 'de' MMMM 'de' yyyy", {
                   locale: ptBR,
                 })}
               </CardTitle>

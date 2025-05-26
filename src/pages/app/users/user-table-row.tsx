@@ -1,7 +1,7 @@
-// import { Edit } from 'lucide-react'
+import { Edit } from 'lucide-react'
 
-// import { Button } from '@/components/ui/button'
-// import { Dialog, DialogTrigger } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
 
 interface User {
@@ -18,7 +18,7 @@ interface Props {
   user: User
 }
 
-// import { UserDetails } from './user-details'
+import { UserDetails } from './user-details'
 
 // interface OrderTableRowProps {}
 
@@ -31,7 +31,7 @@ export function UserTableRow({ user }: Props) {
 
   return (
     <TableRow>
-      {/* <TableCell>
+      <TableCell>
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">
@@ -42,7 +42,7 @@ export function UserTableRow({ user }: Props) {
 
           <UserDetails />
         </Dialog>
-      </TableCell> */}
+      </TableCell>
       <TableCell>{user.name}</TableCell>
       <TableCell>{user.instrument || '-'}</TableCell>
       <TableCell>{user.group || '-'}</TableCell>

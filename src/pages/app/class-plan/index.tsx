@@ -1,7 +1,7 @@
 'use client'
 
 import { PlusIcon } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
@@ -17,11 +17,22 @@ export function ClassPlan() {
     useClassPlanStore()
   const { token } = useAuthStore()
 
+  // Estado para abrir/fechar modal
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
   useEffect(() => {
     if (token) {
       fetchClassPlans(token)
     }
   }, [fetchClassPlans, token])
+
+  // Atualiza a lista e fecha modal
+  const handleCreateSuccess = () => {
+    if (token) {
+      fetchClassPlans(token)
+    }
+    setIsDialogOpen(false)
+  }
 
   // Filtrar os planos de aula pelo grupo selecionado
   const filteredPlans = classPlans.filter(
@@ -54,7 +65,8 @@ export function ClassPlan() {
           <ClassPlanCard plans={filteredPlans} />
         </TabsContent>
       </Tabs>
-      <Dialog>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           <Button
             variant="outline"
@@ -66,7 +78,7 @@ export function ClassPlan() {
           </Button>
         </DialogTrigger>
 
-        <ClassPlanCreate />
+        <ClassPlanCreate token={token} onCreateSuccess={handleCreateSuccess} />
       </Dialog>
     </>
   )

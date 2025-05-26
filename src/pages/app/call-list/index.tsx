@@ -7,10 +7,12 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { useAuthStore } from '@/store/authStore'
 import { useAttendanceStore } from '@/store/callListStore'
 
+import { toast } from 'sonner'
+
 import { Confirmation } from './confirmation'
 
 export function CallList() {
-  const { students, fetchStudentsAttendance, markAttendance } =
+  const { students, fetchStudentsAttendance, markAttendance, currentStudentIndex, setCurrentStudentIndex } =
     useAttendanceStore()
   const { token, id } = useAuthStore()
   const [selectedStudent, setSelectedStudent] = useState<{
@@ -33,7 +35,15 @@ export function CallList() {
     group: string
     instrument: string
     studentAttendance: { date: string; status: string }[]
-  }) {
+  },
+  index: number
+  ) {
+
+    if (index !== currentStudentIndex) {
+      toast.error("Você precisa marcar presença de todos os alunos na ordem da lista.")
+      return
+    }
+
     setSelectedStudent({
       ...student,
       studentAttendance: student.studentAttendance.map((attendance, index) => ({
@@ -48,12 +58,12 @@ export function CallList() {
       <h1 className="mb-6 text-center text-3xl font-bold">Lista de Chamada</h1>
 
       {students && students.length > 0 ? (
-        students.map((student) => (
+        students.map((student, index) => (
           <Dialog key={student.id}>
             <DialogTrigger asChild>
               <Card
                 className="w-full cursor-pointer"
-                onClick={() => handleOpenDialog(student)}
+                onClick={() => handleOpenDialog(student, index)}
               >
                 <CardHeader className="flex-row items-center justify-between space-y-0 pb-1">
                   <CardTitle className="text-sm font-medium">
@@ -94,7 +104,7 @@ export function CallList() {
               </Card>
             </DialogTrigger>
 
-            {selectedStudent && (
+            {selectedStudent && selectedStudent.id === student.id && (
               <Confirmation
                 student={{
                   id: selectedStudent.id,
@@ -104,9 +114,19 @@ export function CallList() {
                 }}
                 instructorId={id || ''}
                 token={token || ''}
-                markAttendance={(data) =>
-                  markAttendance({ ...data, token: token || '' })
-                }
+                markAttendance={async (data) => {
+                  const result = await markAttendance({
+                    ...data,
+                    token: token || '',
+                  })
+
+                  if (result.success) {
+                    setCurrentStudentIndex(currentStudentIndex + 1)
+                    setSelectedStudent(null)
+                  }
+
+                  return result
+                }}
                 onSuccessClose={() => setSelectedStudent(null)}
               />
             )}

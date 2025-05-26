@@ -7,7 +7,13 @@ interface ClassPlan {
   subject: string
   page: string
   exercise: string
+  method: string
+  classNumber: number
+  sementer: string
+  ano: number
 }
+
+type ClassPlanCreatePayload = Omit<ClassPlan, 'id'>
 
 interface ClassPlanStore {
   classPlans: ClassPlan[]
@@ -15,11 +21,12 @@ interface ClassPlanStore {
   setClassPlans: (classPlans: ClassPlan[]) => void
   setSelectedGroup: (group: string) => void
   fetchClassPlans: (token: string) => Promise<void>
+  createClassPlan: (payload: ClassPlanCreatePayload, token: string) => Promise<boolean>
 }
 
 export const useClassPlanStore = create<ClassPlanStore>((set) => ({
   classPlans: [],
-  selectedGroup: 'GROUP_01', // Default group
+  selectedGroup: 'GROUP_01',
   setClassPlans: (classPlans) => set({ classPlans }),
   setSelectedGroup: (group) => set({ selectedGroup: group }),
 
@@ -41,6 +48,26 @@ export const useClassPlanStore = create<ClassPlanStore>((set) => ({
       set({ classPlans: data })
     } catch (error) {
       console.error(error)
+    }
+  },
+
+  createClassPlan: async (payload, token) => {
+    try {
+      const response = await fetch('http://localhost:3333/class-plan', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) throw new Error('Erro ao criar plano de aula')
+
+      return true
+    } catch (error) {
+      console.error('Erro ao criar aula:', error)
+      return false
     }
   },
 }))
