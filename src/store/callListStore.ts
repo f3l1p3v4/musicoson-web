@@ -86,39 +86,32 @@ export const useAttendanceStore = create<AttendanceStore>((set) => ({
       const responseData = await response.json()
       const responseStatus = response.status
 
-      // Atualiza o estado de students após registrar a chamada
-      set((state) => {
-        if (!state.students) return { students: null }
+      if (responseStatus === 201) {
+        set((state) => {
+          if (!state.students) return { students: null }
 
-        const updatedStudents = state.students.map((student) => {
-          if (student.id === studentId) {
-            const alreadyExists = student.studentAttendance.some(
-              (att) => att.date === date
-            )
+          const updatedStudents = state.students.map((student) => {
+            if (student.id === studentId) {
+              const newAttendance = {
+                date,
+                status,
+                classNumber: responseData.classNumber,
+              }
 
-            // Se já existe uma presença para essa data, não faz nada
-            if (alreadyExists) return student
-
-            const newAttendance = {
-              date,
-              status,
-              classNumber: responseData.classNumber,
+              return {
+                ...student,
+                studentAttendance: [
+                  ...(student.studentAttendance ?? []),
+                  newAttendance,
+                ],
+              }
             }
+            return student
+          })
 
-            return {
-              ...student,
-              studentAttendance: [
-                ...(student.studentAttendance ?? []),
-                newAttendance,
-              ],
-            }
-          }
-          return student
+          return { students: updatedStudents }
         })
-
-        return { students: updatedStudents }
-      })
-
+      }
 
       return { success: true, responseData, responseStatus }
     } catch (error) {

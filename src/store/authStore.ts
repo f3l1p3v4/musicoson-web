@@ -14,34 +14,85 @@ interface AuthState {
   logout: () => void
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  token: '',
+// Função auxiliar para salvar no localStorage
+const persistAuthState = (state: Partial<AuthState>) => {
+  localStorage.setItem('auth', JSON.stringify(state))
+}
+
+// Carregar o estado salvo do localStorage
+const loadAuthState = (): Partial<AuthState> => {
+  const stored = localStorage.getItem('auth')
+  if (stored) {
+    try {
+      return JSON.parse(stored)
+    } catch {
+      return {}
+    }
+  }
+  return {}
+}
+
+const initial = {
+  token: null,
   role: '',
-  userName: '',
-  instrument: '',
-  id: '',
+  userName: null,
+  instrument: null,
+  id: null,
+  ...loadAuthState(), // sobrepõe com o que tiver no localStorage
+}
+
+export const useAuthStore = create<AuthState>((set) => ({
+  ...initial,
 
   setToken: (token) => {
-    set({ token })
+    set((state) => {
+      const newState = { ...state, token }
+      persistAuthState(newState)
+      return { token }
+    })
   },
 
   setUserRole: (role) => {
-    set({ role })
+    set((state) => {
+      const newState = { ...state, role }
+      persistAuthState(newState)
+      return { role }
+    })
   },
 
-  setUserName: (name) => {
-    set({ userName: name })
+  setUserName: (userName) => {
+    set((state) => {
+      const newState = { ...state, userName }
+      persistAuthState(newState)
+      return { userName }
+    })
   },
 
   setUserInstrument: (instrument) => {
-    set({ instrument })
+    set((state) => {
+      const newState = { ...state, instrument }
+      persistAuthState(newState)
+      return { instrument }
+    })
   },
 
   setUserId: (id) => {
-    set({ id })
+    set((state) => {
+      const newState = { ...state, id }
+      persistAuthState(newState)
+      return { id }
+    })
   },
 
   logout: () => {
-    set({ token: null, role: '', userName: null })
+    const cleared = {
+      token: null,
+      role: '',
+      userName: null,
+      instrument: null,
+      id: null,
+    }
+    localStorage.removeItem('auth')
+    set(cleared)
   },
 }))
