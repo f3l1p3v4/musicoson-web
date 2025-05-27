@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { isTokenExpired } from '@/utils/auth'
 
 interface AuthState {
   token: string | null
@@ -24,7 +25,12 @@ const loadAuthState = (): Partial<AuthState> => {
   const stored = localStorage.getItem('auth')
   if (stored) {
     try {
-      return JSON.parse(stored)
+      const parsed = JSON.parse(stored)
+      if (parsed.token && isTokenExpired(parsed.token)) {
+        localStorage.removeItem('auth')
+        return {}
+      }
+      return parsed
     } catch {
       return {}
     }

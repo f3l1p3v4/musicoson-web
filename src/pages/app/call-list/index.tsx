@@ -26,6 +26,7 @@ export function CallList() {
   useEffect(() => {
     if (token) {
       fetchStudentsAttendance(token)
+      console.log(currentStudentIndex)
     }
   }, [fetchStudentsAttendance, token])
 
@@ -38,6 +39,30 @@ export function CallList() {
   },
   index: number
   ) {
+    if (students && students.length > 0) {
+      const lastStudent = students[students.length - 1]
+      const lastAttendance = lastStudent.studentAttendance.at(-1)
+
+      if (lastAttendance?.date) {
+        const dataRegister = new Date(lastAttendance.date)
+        const hoje = new Date()
+
+        const isSameDate =
+          dataRegister.getFullYear() === hoje.getFullYear() &&
+          dataRegister.getMonth() === hoje.getMonth() &&
+          dataRegister.getDate() === hoje.getDate()
+
+        if (isSameDate) {
+          toast.warning('A chamada de hoje já foi finalizada.')
+          return
+        }
+      }
+    }
+
+    if (currentStudentIndex === students?.length) {
+      toast.error("Chamada do dia finalizada!")
+      return
+    }
 
     if (index !== currentStudentIndex) {
       toast.error("Você precisa marcar presença de todos os alunos na ordem da lista.")

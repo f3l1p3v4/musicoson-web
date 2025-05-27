@@ -11,7 +11,7 @@ import { useAuthStore } from '@/store/authStore'
 import { userStore } from '@/store/userStore'
 
 import { UserTableRow } from './user-table-row'
-import { UserTableFilters } from './user-table-filters'
+// import { UserTableFilters } from './user-table-filters'
 
 export function Users() {
   const { users, fetchUsers } = userStore()
@@ -30,7 +30,7 @@ export function Users() {
     <>
       <div className="flex flex-col gap-4">
         <h1 className="text-3xl font-bold tracking-tight">Usuários</h1>
-        <UserTableFilters />
+        {/* <UserTableFilters /> */}
       </div>
       <div className="space-y-2.5">
         <div className="rounded-md border">

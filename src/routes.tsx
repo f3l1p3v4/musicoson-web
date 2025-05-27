@@ -1,4 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { toast } from 'sonner'
+import { isTokenExpired } from '@/utils/auth'
 
 import { useAuthStore } from '@/store/authStore'
 
@@ -32,8 +34,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   roleRequired,
 }) => {
   const { token, role } = useAuthStore()
-  if (!token) return <Navigate to="/sign-in" />
-  if (roleRequired && role !== roleRequired) return <Navigate to="/" />
+  if (!token || isTokenExpired(token)) {
+    toast.warning('Sessão expirada. Faça login novamente.')
+    return <Navigate to="/sign-in" replace />
+  }
+
+  if (roleRequired && role !== roleRequired) {
+    return <Navigate to="/" replace />
+  }
 
   return children
 }

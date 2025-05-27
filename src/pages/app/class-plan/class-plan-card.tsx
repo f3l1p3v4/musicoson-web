@@ -18,6 +18,9 @@ interface ClassPlanCardProps {
     subject: string
     page: string
     exercise: string
+    method: string
+    classNumber: number
+    semester: string
   }[]
 }
 
@@ -33,8 +36,8 @@ export function ClassPlanCard({ plans }: ClassPlanCardProps) {
             <TableRow>
               <TableHead>Data</TableHead>
               <TableHead>Assunto</TableHead>
-              <TableHead>Pág</TableHead>
-              <TableHead>Exercício</TableHead>
+              <TableHead>Módulos</TableHead>
+              <TableHead>Semestre</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

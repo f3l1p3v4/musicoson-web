@@ -25,7 +25,7 @@ export function ClassPlanCreate({ token, onCreateSuccess }: ClassPlanCreateProps
     exercise: '',
     method: '',
     classNumber: '',
-    sementer: 'S1',
+    semester: 'S1',
     ano: new Date().getFullYear().toString(),
   })
 
@@ -44,7 +44,7 @@ export function ClassPlanCreate({ token, onCreateSuccess }: ClassPlanCreateProps
       exercise: form.exercise,
       method: form.method,
       classNumber: Number(form.classNumber),
-      sementer: form.sementer,
+      semester: form.semester,
       ano: Number(form.ano),
     }
 
@@ -71,7 +71,7 @@ export function ClassPlanCreate({ token, onCreateSuccess }: ClassPlanCreateProps
         <Input placeholder="Exercício" name="exercise" value={form.exercise} onChange={handleChange} />
         <Input placeholder="Módulos" name="method" value={form.method} onChange={handleChange} />
         <Input placeholder="Número da aula" name="classNumber" value={form.classNumber} onChange={handleChange} />
-        <Input placeholder="Semestre (ex: S1)" name="sementer" value={form.sementer} onChange={handleChange} />
+        <Input placeholder="Semestre (ex: S1)" name="semester" value={form.semester} onChange={handleChange} />
         <Input placeholder="Ano (ex: 2025)" name="ano" value={form.ano} onChange={handleChange} />
       </section>
 

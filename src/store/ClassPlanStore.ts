@@ -9,7 +9,7 @@ interface ClassPlan {
   exercise: string
   method: string
   classNumber: number
-  sementer: string
+  semester: string
   ano: number
 }
 
