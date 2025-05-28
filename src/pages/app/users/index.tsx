@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { PlusIcon } from 'lucide-react'
 
 import {
   Table,
@@ -7,22 +8,36 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogTrigger } from '@/components/ui/dialog'
+
 import { useAuthStore } from '@/store/authStore'
 import { userStore } from '@/store/userStore'
 
 import { UserTableRow } from './user-table-row'
+import { UserCreate } from './user-create'
 // import { UserTableFilters } from './user-table-filters'
 
 export function Users() {
   const { users, fetchUsers } = userStore()
   const { token } = useAuthStore()
   const [loading, setLoading] = useState(true)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   useEffect(() => {
     if (token) {
       fetchUsers(token).finally(() => setLoading(false))
     }
   }, [fetchUsers, token])
+
+  // Atualiza a lista e fecha modal
+  const handleCreateSuccess = () => {
+    if (token) {
+      fetchUsers(token)
+    }
+    setIsDialogOpen(false)
+  }
 
   if (loading) return <p>Carregando...</p>
 
@@ -54,6 +69,21 @@ export function Users() {
           </Table>
         </div>
       </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            className="fixed bottom-6 right-6 bg-primary text-white hover:bg-primary hover:text-white shadow-lg z-50"
+          >
+            <PlusIcon className="h-8 w-8" />
+            <span className="sr-only">Criar Novo</span>
+          </Button>
+        </DialogTrigger>
+
+        <UserCreate token={token} onCreateSuccess={handleCreateSuccess} />
+      </Dialog>
     </>
   )
 }

@@ -39,6 +39,9 @@ export function CallList() {
   },
   index: number
   ) {
+
+    console.log(currentStudentIndex, students?.length)
+
     if (students && students.length > 0) {
       const lastStudent = students[students.length - 1]
       const lastAttendance = lastStudent.studentAttendance.at(-1)
@@ -60,6 +63,7 @@ export function CallList() {
     }
 
     if (currentStudentIndex === students?.length) {
+      setCurrentStudentIndex(0)
       toast.error("Chamada do dia finalizada!")
       return
     }

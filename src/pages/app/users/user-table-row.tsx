@@ -40,7 +40,7 @@ export function UserTableRow({ user }: Props) {
             </Button>
           </DialogTrigger>
 
-          <UserDetails />
+          <UserDetails user={user} />
         </Dialog>
       </TableCell>
       <TableCell>{user.name}</TableCell>

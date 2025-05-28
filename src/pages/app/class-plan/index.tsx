@@ -71,7 +71,7 @@ export function ClassPlan() {
           <Button
             variant="outline"
             size="icon"
-            className="absolute bottom-6 right-6 bg-primary text-white hover:bg-primary hover:text-white"
+            className="fixed bottom-6 right-6 bg-primary text-white hover:bg-primary hover:text-white shadow-lg z-50"
           >
             <PlusIcon className="h-8 w-8" />
             <span className="sr-only">Criar Novo</span>
