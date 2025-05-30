@@ -21,7 +21,7 @@ import { UserCreate } from './user-create'
 
 export function Users() {
   const { users, fetchUsers } = userStore()
-  const { token } = useAuthStore()
+  const { token, role } = useAuthStore()
   const [loading, setLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -70,20 +70,22 @@ export function Users() {
         </div>
       </div>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="fixed bottom-6 right-6 bg-primary text-white hover:bg-primary hover:text-white shadow-lg z-50"
-          >
-            <PlusIcon className="h-8 w-8" />
-            <span className="sr-only">Criar Novo</span>
-          </Button>
-        </DialogTrigger>
+      {role === 'INSTRUCTOR' && (        
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="fixed bottom-14 right-6 bg-primary text-white hover:bg-primary hover:text-white shadow-lg z-50"
+            >
+              <PlusIcon className="h-8 w-8" />
+              <span className="sr-only">Criar Novo</span>
+            </Button>
+          </DialogTrigger>
 
-        <UserCreate token={token} onCreateSuccess={handleCreateSuccess} />
-      </Dialog>
+          <UserCreate token={token} onCreateSuccess={handleCreateSuccess} />
+        </Dialog>
+      )}
     </>
   )
 }

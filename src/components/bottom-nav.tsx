@@ -1,19 +1,20 @@
-import { Home, User, Settings } from 'lucide-react'
+import { Home, Bell } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import clsx from 'clsx'
 
+import { AccountMenu } from '@/components/account-menu'
+ 
 const navItems = [
+  { name: 'Perfil', icon: Bell, to: '/warnings' },
   { name: 'Início', icon: Home, to: '/' },
-  { name: 'Perfil', icon: User, to: '/profile' },
-  { name: 'Configurações', icon: Settings, to: '/settings' },
 ]
 
 export function BottomNav() {
   const location = useLocation()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t shadow-md sm:hidden">
-      <ul className="flex justify-around p-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background text-foreground border-t shadow-md">
+      <ul className="flex justify-around p-3">
         {navItems.map((item) => {
           const isActive = location.pathname === item.to
           const Icon = item.icon
@@ -28,11 +29,14 @@ export function BottomNav() {
                 )}
               >
                 <Icon className="h-5 w-5 mb-1" />
-                {item.name}
               </Link>
             </li>
           )
         })}
+
+        <li>
+          <AccountMenu />
+        </li>
       </ul>
     </nav>
   )

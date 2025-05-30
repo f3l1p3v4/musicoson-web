@@ -54,7 +54,6 @@ const PracticalLevelLabel = {
   [PracticalLevel.OFICIALIZACAO]: 'Oficialização',
 }
 
-// Esquema de validação com Zod
 const userSchema = z.object({
   name: z.string().min(1, 'Nome obrigatório'),
   instrument: z.string().min(1, 'Instrumento obrigatório'),
@@ -123,7 +122,6 @@ export function UserCreate({ token, onCreateSuccess }: UserCreateProps) {
         <Input placeholder="Nome" name="name" value={form.name} onChange={handleChange} />
         <Input placeholder="Instrumento" name="instrument" value={form.instrument} onChange={handleChange} />
 
-        {/* Grupo */}
         <Select value={form.group} onValueChange={(value) => setForm({ ...form, group: value as Group })}>
           <SelectTrigger>
             <SelectValue placeholder="Grupo" />
@@ -137,7 +135,6 @@ export function UserCreate({ token, onCreateSuccess }: UserCreateProps) {
           </SelectContent>
         </Select>
 
-        {/* Função */}
         <Select value={form.role} onValueChange={(value) => setForm({ ...form, role: value as UserRole })}>
           <SelectTrigger>
             <SelectValue placeholder="Função" />
@@ -154,7 +151,6 @@ export function UserCreate({ token, onCreateSuccess }: UserCreateProps) {
         <Input placeholder="E-mail" name="email" type="email" value={form.email} onChange={handleChange} />
         <Input placeholder="Celular (9 dígitos)" name="phone" value={form.phone} onChange={handleChange} />
 
-        {/* Nível Prático */}
         <Select
           value={form.practical_level}
           onValueChange={(value) => setForm({ ...form, practical_level: value as PracticalLevel })}

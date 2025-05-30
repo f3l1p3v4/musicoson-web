@@ -70,7 +70,7 @@ export function AppLayout() {
         <Outlet />
       </div>
 
-      <BottomNav /> {/* novo componente fixado no fundo */}
+      <BottomNav />
     </div>
   )
 }
