@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useAuthStore } from '@/store/authStore' // Pegamos o ID e token do authStore
@@ -8,7 +9,9 @@ import { useProfileStore } from '@/store/profileStore'
 
 export function Perfil() {
   const { user, loading, error, fetchUser } = useProfileStore()
-  const { id, token } = useAuthStore() // Assumindo que o authStore tem ID e token
+  const { id, token } = useAuthStore()
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (id && token) {
@@ -30,7 +33,14 @@ export function Perfil() {
 
   return (
     <div className="mx-auto w-full max-w-[350px] justify-center">
-      <h1 className="mb-6 text-center text-3xl font-bold">Perfil</h1>
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-2 text-[14px] w-max rounded py-2 hover:pointer"
+      >
+        ← Voltar
+      </button>
+
+      <h1 className="mb-6 text-center text-xl xs:text-3xl font-bold">Perfil</h1>
 
       <Avatar className="m-auto">
         <AvatarImage

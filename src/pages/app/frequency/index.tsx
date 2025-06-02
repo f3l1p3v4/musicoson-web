@@ -5,6 +5,8 @@ import { ptBR } from 'date-fns/locale/pt-BR'
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { useNavigate } from 'react-router-dom'
+
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuthStore } from '@/store/authStore'
@@ -14,6 +16,8 @@ export function Frequency() {
   const { studentId: studentIdFromParams } = useParams()
   const { token } = useAuthStore()
   const { studentHistory, fetchStudentHistory } = useStudentHistoryStore()
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!token) return
@@ -31,7 +35,13 @@ export function Frequency() {
 
   return (
     <section className="grid gap-2">
-      <h1 className="mb-6 text-center text-3xl font-bold">
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-2 text-[14px] w-max rounded py-2 hover:pointer"
+      >
+        ← Voltar
+      </button>
+      <h1 className="mb-6 text-center text-xl xs:text-3xl font-bold">
         Frequência nas Aulas
       </h1>
 

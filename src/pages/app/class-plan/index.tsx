@@ -2,6 +2,7 @@
 
 import { PlusIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
@@ -18,6 +19,8 @@ export function ClassPlan() {
   const { token, role } = useAuthStore()
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (token) {
@@ -38,16 +41,26 @@ export function ClassPlan() {
 
   return (
     <>
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-2 text-[14px] w-max rounded py-2 hover:pointer"
+      >
+        ← Voltar
+      </button>
+      <div className="flex flex-col gap-4">
+        <h1 className="text-xl xs:text-3xl font-bold tracking-tight">Plano de Aulas</h1>
+        {/* <UserTableFilters /> */}
+      </div>
       <Tabs
         value={selectedGroup}
         onValueChange={setSelectedGroup}
         className="w-full"
       >
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="GROUP_01">Grupo 01</TabsTrigger>
-          <TabsTrigger value="GROUP_02">Grupo 02</TabsTrigger>
-          <TabsTrigger value="GROUP_03">Grupo 03</TabsTrigger>
-          <TabsTrigger value="GROUP_04">Grupo 04</TabsTrigger>
+          <TabsTrigger className='text-xs xs:text-sm' value="GROUP_01">Grupo 01</TabsTrigger>
+          <TabsTrigger className='text-xs xs:text-sm' value="GROUP_02">Grupo 02</TabsTrigger>
+          <TabsTrigger className='text-xs xs:text-sm' value="GROUP_03">Grupo 03</TabsTrigger>
+          <TabsTrigger className='text-xs xs:text-sm' value="GROUP_04">Grupo 04</TabsTrigger>
         </TabsList>
         <TabsContent value="GROUP_01">
           <ClassPlanCard plans={filteredPlans} />

@@ -13,18 +13,43 @@ import { MenuIcon, LogOut, BookOpenText, FileText, Users2, User2Icon } from 'luc
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import { NavLink } from './nav-link'
-import { ThemeToggle } from './theme/theme-toggle'
-
-import LogoMenuImg from '../assets/logo-menu.png'
+// import { ThemeToggle } from './theme/theme-toggle'
 
 export function AccountMenu() {
-  const { role, logout } = useAuthStore()
+  const { userName, role, logout } = useAuthStore()
   const navigate = useNavigate()
 
   const handleLogout = () => {
     logout()
     navigate('/sign-in')
   }
+
+  const nameParts = userName?.split(' ') || []
+  const formattedName =
+  nameParts.length > 1
+    ? `${capitalize(nameParts[0])} ${capitalize(nameParts[1])}`
+    : capitalize(nameParts[0]) || 'Usuário'
+
+    function capitalize(str?: string) {
+      if (!str) return ''
+      return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+    }
+
+    const roleLabel = (() => {
+    if (role === 'INSTRUCTOR' && formattedName.toLowerCase().startsWith('carlos')) {
+      return 'Encarregado'
+    }
+    
+    if (role === 'INSTRUCTOR') {
+      return 'Instrutor'
+    }
+
+    if (role === 'STUDENT') {
+      return 'Aluno'
+    }
+
+    return role
+  })()
 
   return (
     <Sheet>
@@ -34,13 +59,16 @@ export function AccountMenu() {
         </button>
       </SheetTrigger>
 
-      <SheetContent side="right" className="w-72 pt-10 flex flex-col justify-between">
+      <SheetContent side="right" className="w-72 pt-6 flex flex-col justify-between">
         <div>
-          <SheetHeader className="mb-4">
-            <SheetTitle>
-              <div className="flex flex-col items-center">
-                <img src={LogoMenuImg} className="w-40" alt="Logo" />
-              </div>
+          <SheetHeader className="my-8">
+            <SheetTitle className="flex flex-col items-start text-left">
+              <span className="font-semibold text-sm text-primary">
+                {formattedName}
+              </span>
+              <span className="text-xs font-normal text-muted-foreground">
+                {roleLabel}
+              </span>
             </SheetTitle>
           </SheetHeader>
 
@@ -84,10 +112,10 @@ export function AccountMenu() {
         <div className="px-2 space-y-3">
           <Separator />
 
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Tema</span>
             <ThemeToggle />
-          </div>
+          </div> */}
 
           <SheetClose asChild>
             <div className="flex items-center justify-between">

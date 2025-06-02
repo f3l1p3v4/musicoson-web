@@ -14,9 +14,9 @@ export function Call() {
         </CardHeader>
         <CardContent className="space-y-1">
           <ClipboardCheck className="mb-4 h-10 w-10 sm:h-12 sm:w-12" />
-          <p className="mt-4 text-xs font-extralight text-muted-foreground">
-            5 em aberto
-          </p>
+          {/* <p className="mt-4 text-xs font-extralight text-muted-foreground">
+            Chamada do dia finalizada
+          </p> */}
         </CardContent>
       </Card>
     </NavLink>

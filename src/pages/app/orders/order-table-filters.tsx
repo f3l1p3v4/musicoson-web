@@ -29,11 +29,11 @@ export function OrderTableFilters() {
           <SelectItem value="delivered">Entregue</SelectItem>
         </SelectContent>
       </Select>
-      <Button variant="secondary" size="xs" type="submit">
+      <Button variant="secondary" size="sm" type="submit">
         <Search className="mr-2 h-4 w-4" />
         Filtrar resultados
       </Button>
-      <Button variant="outline" size="xs" type="button">
+      <Button variant="outline" size="sm" type="button">
         <X className="mr-2 h-4 w-4" />
         Remover filtros
       </Button>

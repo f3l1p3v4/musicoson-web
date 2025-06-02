@@ -18,10 +18,10 @@ interface ClassPlanTableRowProps {
 export function ClassPlanTableRow({ plan }: ClassPlanTableRowProps) {
   return (
     <TableRow>
-      <TableCell>{new Date(plan.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</TableCell>
-      <TableCell>Aula {plan.classNumber} - {plan.subject}</TableCell>
-      <TableCell>{plan.method}</TableCell>
-      <TableCell>{plan.semester}</TableCell>
+      <TableCell className='text-xs xs:text-sm'>{new Date(plan.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</TableCell>
+      <TableCell className='text-xs xs:text-sm'>Aula {plan.classNumber} - {plan.subject}</TableCell>
+      <TableCell className='text-xs xs:text-sm'>{plan.method}</TableCell>
+      <TableCell className='text-xs xs:text-sm'>{plan.semester}</TableCell>
     </TableRow>
   )
 }

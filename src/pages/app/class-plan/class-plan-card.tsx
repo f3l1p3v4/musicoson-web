@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -27,17 +27,14 @@ interface ClassPlanCardProps {
 export function ClassPlanCard({ plans }: ClassPlanCardProps) {
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="font-2xl mb-6">Plano de Aula</CardTitle>
-      </CardHeader>
       <CardContent className="space-y-2">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Data</TableHead>
-              <TableHead>Assunto</TableHead>
-              <TableHead>Módulos</TableHead>
-              <TableHead>Semestre</TableHead>
+              <TableHead className='text-xs xs:text-sm'>Data</TableHead>
+              <TableHead className='text-xs xs:text-sm'>Assunto</TableHead>
+              <TableHead className='text-xs xs:text-sm'>Módulos</TableHead>
+              <TableHead className='text-xs xs:text-sm'>Semestre</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

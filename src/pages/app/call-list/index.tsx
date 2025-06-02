@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,6 +16,7 @@ export function CallList() {
   const { students, fetchStudentsAttendance, markAttendance, currentStudentIndex, setCurrentStudentIndex } =
     useAttendanceStore()
   const { token, id } = useAuthStore()
+    const navigate = useNavigate()
   const [selectedStudent, setSelectedStudent] = useState<{
     id: string
     name: string
@@ -29,6 +31,13 @@ export function CallList() {
       console.log(currentStudentIndex)
     }
   }, [fetchStudentsAttendance, token])
+
+  useEffect(() => {
+    if (students && currentStudentIndex === students.length) {
+      setCurrentStudentIndex(0)
+      toast.error("Chamada do dia finalizada!")
+    }
+  }, [students, currentStudentIndex])
 
   function handleOpenDialog(student: {
     id: string
@@ -82,37 +91,51 @@ export function CallList() {
     })
   }
 
+  const groupMap: Record<string, string> = {
+    GROUP_01: '01',
+    GROUP_02: '02',
+    GROUP_03: '03',
+    GROUP_04: '04',
+  }
+
   return (
-    <section className="grid gap-2">
-      <h1 className="mb-6 text-center text-3xl font-bold">Lista de Chamada</h1>
+    <section className="grid">
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-2 w-max text-[14px] rounded py-2 hover:pointer"
+      >
+        ← Voltar
+      </button>
+
+      <h1 className="mb-6 text-center text-xl xs:text-3xl font-bold">Lista de Chamada</h1>
 
       {students && students.length > 0 ? (
         students.map((student, index) => (
           <Dialog key={student.id}>
             <DialogTrigger asChild>
               <Card
-                className="w-full cursor-pointer"
+                className="w-full cursor-pointer mb-2"
                 onClick={() => handleOpenDialog(student, index)}
               >
                 <CardHeader className="flex-row items-center justify-between space-y-0 pb-1">
                   <CardTitle className="text-sm font-medium">
-                    {student.group}
+                    {groupMap[student.group] ? `Grupo ${groupMap[student.group]}` : ''}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-1">
                   <p className="text-md mt-1 font-bold">{student.name}</p>
                   <p className="mt-2 text-xs">{student.instrument}</p>
-                  <section className="flex gap-2">
+                  <section className="flex gap-2 pt-2">
                     {student.studentAttendance.length > 0 ? (
-                      student.studentAttendance.map((attendance) => (
+                      [...student.studentAttendance]
+                        .slice(-5)
+                        .map((attendance) => (
                         <Badge
                           key={attendance.date}
                           variant="default"
-                          className={
-                            attendance.status === 'PRESENT'
-                              ? 'bg-green-500'
-                              : 'bg-red-500'
-                          }
+                          className={`text-xs ${
+                            attendance.status === 'PRESENT' ? 'bg-green-500' : 'bg-red-500'
+                          }`}
                         >
                           {new Date(attendance.date).toLocaleDateString(
                             'pt-BR',

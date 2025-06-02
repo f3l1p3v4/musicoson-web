@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { PlusIcon } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 import {
   Table,
@@ -24,6 +25,7 @@ export function Users() {
   const { token, role } = useAuthStore()
   const [loading, setLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (token) {
@@ -31,7 +33,6 @@ export function Users() {
     }
   }, [fetchUsers, token])
 
-  // Atualiza a lista e fecha modal
   const handleCreateSuccess = () => {
     if (token) {
       fetchUsers(token)
@@ -43,8 +44,15 @@ export function Users() {
 
   return (
     <>
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-2 text-[14px] w-max rounded py-2 hover:pointer"
+      >
+        ← Voltar
+      </button>
+
       <div className="flex flex-col gap-4">
-        <h1 className="text-3xl font-bold tracking-tight">Usuários</h1>
+        <h1 className="text-xl xs:text-3xl font-bold tracking-tight">Usuários</h1>
         {/* <UserTableFilters /> */}
       </div>
       <div className="space-y-2.5">
@@ -53,12 +61,12 @@ export function Users() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[64px]"></TableHead>
-                <TableHead>Nome</TableHead>
-                <TableHead>Instrumento</TableHead>
-                <TableHead>Grupo</TableHead>
-                <TableHead>Tipo de Usuário</TableHead>
-                <TableHead>E-mail</TableHead>
-                <TableHead>Celular</TableHead>
+                <TableHead className='text-xs xs:text-sm'>Nome</TableHead>
+                <TableHead className='text-xs xs:text-sm'>Instrumento</TableHead>
+                <TableHead className='text-xs xs:text-sm'>Grupo</TableHead>
+                <TableHead className='text-xs xs:text-sm'>Tipo de Usuário</TableHead>
+                <TableHead className='text-xs xs:text-sm'>E-mail</TableHead>
+                <TableHead className='text-xs xs:text-sm'>Celular</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

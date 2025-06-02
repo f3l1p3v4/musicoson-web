@@ -1,11 +1,12 @@
-import { Home, Bell } from 'lucide-react'
+// import { Home, Bell } from 'lucide-react'
+import { Home } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import clsx from 'clsx'
 
 import { AccountMenu } from '@/components/account-menu'
  
 const navItems = [
-  { name: 'Perfil', icon: Bell, to: '/warnings' },
+  // { name: 'Perfil', icon: Bell, to: '/warnings' },
   { name: 'Início', icon: Home, to: '/' },
 ]
 

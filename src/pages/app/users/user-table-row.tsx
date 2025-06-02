@@ -24,9 +24,15 @@ import { UserDetails } from './user-details'
 
 export function UserTableRow({ user }: Props) {
   const roleMap: Record<string, string> = {
-    admin: 'Administrador',
-    instructor: 'Instrutor',
-    student: 'Aluno',
+    INSTRUCTOR: 'Instrutor',
+    STUDENT: 'Aluno',
+  }
+
+  const groupMap: Record<string, string> = {
+    GROUP_01: '01',
+    GROUP_02: '02',
+    GROUP_03: '03',
+    GROUP_04: '04',
   }
 
   return (
@@ -35,7 +41,7 @@ export function UserTableRow({ user }: Props) {
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">
-              <Edit className="h-3 w-3" />
+              <Edit className="h-2 w-2 xs:h-3 xs:w-3" />
               <span className="sr-only">Editar</span>
             </Button>
           </DialogTrigger>
@@ -43,12 +49,12 @@ export function UserTableRow({ user }: Props) {
           <UserDetails user={user} />
         </Dialog>
       </TableCell>
-      <TableCell>{user.name}</TableCell>
-      <TableCell>{user.instrument || '-'}</TableCell>
-      <TableCell>{user.group || '-'}</TableCell>
-      <TableCell>{roleMap[user.role] || user.role}</TableCell>
-      <TableCell>{user.email}</TableCell>
-      <TableCell>{user.phone || '-'}</TableCell>
+      <TableCell className='text-xs xs:text-sm'>{user.name}</TableCell>
+      <TableCell className='text-xs xs:text-sm'>{user.instrument || '-'}</TableCell>
+      <TableCell className='text-xs xs:text-sm'>{user.group ? groupMap[user.group] : '-'}</TableCell>
+      <TableCell className='text-xs xs:text-sm'>{roleMap[user.role] || user.role}</TableCell>
+      <TableCell className='text-xs xs:text-sm'>{user.email}</TableCell>
+      <TableCell className='text-xs xs:text-sm'>{user.phone || '-'}</TableCell>
     </TableRow>
   )
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuthStore } from '@/store/authStore'
@@ -10,6 +11,8 @@ export function ProgramMinimum() {
   const { programMinimum, fetchProgramMinimum } = useProgramMinimumStore()
   const { token } = useAuthStore()
   const [loading, setLoading] = useState(true)
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (token) {
@@ -23,8 +26,15 @@ export function ProgramMinimum() {
 
   return (
     <section className="flex flex-col gap-2">
-      <h1 className="mb-6 text-center text-3xl font-bold">Programa Mínimo</h1>
-      <h1 className="mx-auto mb-6 max-w-screen-sm text-center text-2xl font-bold">
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-2 text-[14px] w-max rounded py-2 hover:pointer"
+      >
+        ← Voltar
+      </button>
+
+      <h1 className="mb-2 text-center text-xl xs:text-3xl font-bold">Programa Mínimo</h1>
+      <h1 className="mx-auto mb-4 max-w-screen-sm text-center text-sm xs:text-2xl font-bold">
         SUGESTÃO DE MÉTODOS PARA INSTRUMENTOS - JAN/2018
       </h1>
 
