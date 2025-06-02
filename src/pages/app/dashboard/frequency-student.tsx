@@ -11,7 +11,7 @@ export function FrequencyStudent() {
           <CardTitle className="text-base font-semibold">Frequência</CardTitle>
         </CardHeader>
         <CardContent className="space-y-1">
-          <ContactRound className="mb-4 h-12 w-12" />
+          <ContactRound className="mb-4 h-10 w-10 sm:h-12 sm:w-12" />
           <p className="mt-4 text-xs text-muted-foreground">12 alunos</p>
         </CardContent>
       </Card>

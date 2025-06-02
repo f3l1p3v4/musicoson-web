@@ -7,14 +7,16 @@ export function Call() {
   return (
     <NavLink className="flex w-full gap-2" to="/call-list">
       <Card className="w-full">
-        <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-base font-semibold">
+        <CardHeader className="flex-row items-center justify-between space-y-0 pb-3">
+          <CardTitle className="text-sm font-semibold sm:text-base">
             Lista de Chamada
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-1">
-          <ClipboardCheck className="mb-4 h-12 w-12" />
-          <p className="mt-4 text-xs text-muted-foreground">5 em aberto</p>
+          <ClipboardCheck className="mb-4 h-10 w-10 sm:h-12 sm:w-12" />
+          <p className="mt-4 text-xs font-extralight text-muted-foreground">
+            5 em aberto
+          </p>
         </CardContent>
       </Card>
     </NavLink>

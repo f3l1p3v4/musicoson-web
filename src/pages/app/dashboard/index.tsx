@@ -16,7 +16,7 @@ export function Dashboard() {
         {/* role === 'INSTRUCTOR' && <CardAlertFrequency /> */}
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
 
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
           {/* <Task /> */}
           {role === 'INSTRUCTOR' && <Call />}
           {role === 'INSTRUCTOR' && <FrequencyStudent />}
