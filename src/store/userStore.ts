@@ -44,7 +44,7 @@ export const userStore = create<UserStore>((set) => ({
 
   fetchUsers: async (token: string) => {
     try {
-      const response = await fetch('http://localhost:3333/users', {
+      const response = await fetch('http://31.97.26.156:3333/users', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -63,7 +63,7 @@ export const userStore = create<UserStore>((set) => ({
 
   createUser: async (data: CreateUserInput, token: string) => {
     try {
-      const response = await fetch('http://localhost:3333/users/register', {
+      const response = await fetch('http://31.97.26.156:3333/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ export const userStore = create<UserStore>((set) => ({
 
   updateUser: async (data: UpdateUserInput, token: string) => {
     try {
-      const response = await fetch(`http://localhost:3333/users/${data.id}`, {
+      const response = await fetch(`http://31.97.26.156:3333/users/${data.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

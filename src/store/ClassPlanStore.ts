@@ -32,7 +32,7 @@ export const useClassPlanStore = create<ClassPlanStore>((set) => ({
 
   fetchClassPlans: async (token) => {
     try {
-      const response = await fetch('http://localhost:3333/class-plan', {
+      const response = await fetch('http://31.97.26.156:3333/class-plan', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -53,7 +53,7 @@ export const useClassPlanStore = create<ClassPlanStore>((set) => ({
 
   createClassPlan: async (payload, token) => {
     try {
-      const response = await fetch('http://localhost:3333/class-plan', {
+      const response = await fetch('http://31.97.26.156:3333/class-plan', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,

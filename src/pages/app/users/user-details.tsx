@@ -53,7 +53,7 @@ export function UserDetails({ user }: Props) {
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`http://localhost:3333/users/${user.id}`, {
+      const response = await fetch(`http://31.97.26.156:3333/users/${user.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

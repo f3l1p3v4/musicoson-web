@@ -60,7 +60,7 @@ export const useAttendanceStore = create<AttendanceStore>()(
       fetchStudentsAttendance: async (token) => {
         try {
           const response = await fetch(
-            'http://localhost:3333/attendance/students',
+            'http://31.97.26.156:3333/attendance/students',
             {
               method: 'GET',
               headers: {
@@ -89,7 +89,7 @@ export const useAttendanceStore = create<AttendanceStore>()(
         token,
       }) => {
         try {
-          const response = await fetch('http://localhost:3333/attendance', {
+          const response = await fetch('http://31.97.26.156:3333/attendance', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -143,7 +143,7 @@ export const useAttendanceStore = create<AttendanceStore>()(
       updateAttendance: async ({ attendanceId, status, token }) => {
         try {
           const response = await fetch(
-            `http://localhost:3333/attendance/${attendanceId}`,
+            `http://31.97.26.156:3333/attendance/${attendanceId}`,
             {
               method: 'PUT',
               headers: {
