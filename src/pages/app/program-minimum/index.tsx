@@ -28,19 +28,21 @@ export function ProgramMinimum() {
     <section className="flex flex-col gap-2">
       <button
         onClick={() => navigate(-1)}
-        className="mb-2 text-[14px] w-max rounded py-2 hover:pointer"
+        className="hover:pointer mb-2 w-max rounded py-2 text-[14px]"
       >
         ← Voltar
       </button>
 
-      <h1 className="mb-2 text-center text-xl xs:text-3xl font-bold">Programa Mínimo</h1>
-      <h1 className="mx-auto mb-4 max-w-screen-sm text-center text-sm xs:text-2xl font-bold">
+      <h1 className="mb-2 text-center text-xl font-bold xs:text-3xl">
+        Programa Mínimo
+      </h1>
+      <h1 className="mx-auto mb-4 max-w-screen-sm text-center text-sm font-bold xs:text-2xl">
         SUGESTÃO DE MÉTODOS PARA INSTRUMENTOS - JAN/2018
       </h1>
 
       {programMinimum.map((program, programIndex) => (
         <div key={programIndex}>
-          <h2 className="mb-6 text-left text-2xl font-bold">
+          <h2 className="mb-6 text-left text-xl font-bold md:text-2xl">
             {program.instrument}
           </h2>
 
