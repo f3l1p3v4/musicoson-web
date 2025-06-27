@@ -1,7 +1,5 @@
 'use client'
 
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale/pt-BR'
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -28,11 +26,6 @@ export function Frequency() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, studentIdFromParams])
 
-  function parseAsUTC(dateString: string) {
-    const [year, month, day] = dateString.split('T')[0].split('-').map(Number)
-    return new Date(Date.UTC(year, month - 1, day))
-  }
-
   return (
     <section className="grid gap-2">
       <button
@@ -50,9 +43,15 @@ export function Frequency() {
           <Card key={item.id} className="w-full">
             <CardHeader className="flex-row items-center justify-between space-y-0 pb-1">
               <CardTitle className="text-sm font-medium">
-                {format(parseAsUTC(item.date), "dd 'de' MMMM 'de' yyyy", {
-                  locale: ptBR,
-                })}
+                {new Date(item.date).toLocaleDateString(
+                  'pt-BR',
+                  {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    timeZone: 'UTC',
+                  },
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-1">
