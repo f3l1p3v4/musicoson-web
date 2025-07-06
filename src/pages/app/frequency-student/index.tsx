@@ -30,11 +30,11 @@ export function FrequencyStudent() {
     <section className="grid gap-2">
       <button
         onClick={() => navigate(-1)}
-        className="mb-2 w-max text-[14px] rounded py-2 hover:pointer"
+        className="hover:pointer mb-2 w-max rounded py-2 text-[14px]"
       >
         ← Voltar
       </button>
-      <h1 className="mb-6 text-center text-xl xs:text-3xl font-bold">
+      <h1 className="mb-6 text-center text-xl font-bold xs:text-3xl">
         Frequência por Aluno
       </h1>
 

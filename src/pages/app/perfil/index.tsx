@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useAuthStore } from '@/store/authStore' // Pegamos o ID e token do authStore
+import { useAuthStore } from '@/store/authStore'
 import { useProfileStore } from '@/store/profileStore'
 
 export function Perfil() {
@@ -35,12 +35,12 @@ export function Perfil() {
     <div className="mx-auto w-full max-w-[350px] justify-center">
       <button
         onClick={() => navigate(-1)}
-        className="mb-2 text-[14px] w-max rounded py-2 hover:pointer"
+        className="hover:pointer mb-2 w-max rounded py-2 text-[14px]"
       >
         ← Voltar
       </button>
 
-      <h1 className="mb-6 text-center text-xl xs:text-3xl font-bold">Perfil</h1>
+      <h1 className="mb-6 text-center text-xl font-bold xs:text-3xl">Perfil</h1>
 
       <Avatar className="m-auto">
         <AvatarImage

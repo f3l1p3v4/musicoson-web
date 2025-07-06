@@ -5,6 +5,7 @@ interface User {
   id: string
   name: string
   email: string
+  group: string
   instrument?: string
   role: string
   phone?: string
