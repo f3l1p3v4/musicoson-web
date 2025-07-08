@@ -1,4 +1,7 @@
+import { AxiosError } from 'axios'
 import { create } from 'zustand'
+
+import { api } from '@/lib/api'
 
 interface Attendance {
   id: string
@@ -24,16 +27,19 @@ interface AttendanceResponse {
   attendance?: Attendance
 }
 
+interface ApiErrorResponse {
+  message?: string
+  error?: string
+  statusCode?: number
+}
+
 interface StudentHistoryStore {
   studentHistory: StudentAttendance[]
   message: string | null
   isLoading: boolean
   error: string | null
 
-  // Funções para buscar e gerenciar histórico
   fetchStudentHistory: (studentId: string, token: string) => Promise<void>
-
-  // Função para registrar presença
   registerAttendance: (
     data: {
       date: string
@@ -43,8 +49,6 @@ interface StudentHistoryStore {
     },
     token: string,
   ) => Promise<AttendanceResponse | null>
-
-  // Função para limpar mensagens
   clearMessage: () => void
   clearError: () => void
 }
@@ -56,11 +60,11 @@ export const useStudentHistoryStore = create<StudentHistoryStore>((set) => ({
   error: null,
 
   fetchStudentHistory: async (studentId, token) => {
-    try {
-      set({ isLoading: true, error: null })
+    set({ isLoading: true, error: null })
 
-      const response = await fetch(
-        `http://31.97.26.156:3333/attendance/student/${studentId}`,
+    try {
+      const response = await api.get<StudentAttendance[]>(
+        `/attendance/student/${studentId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -69,55 +73,57 @@ export const useStudentHistoryStore = create<StudentHistoryStore>((set) => ({
         },
       )
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(
-          errorData.message || 'Erro ao buscar histórico do aluno',
-        )
+      set({ studentHistory: response.data, isLoading: false })
+    } catch (error) {
+      let errorMessage = 'Erro ao buscar histórico do aluno'
+
+      if (error instanceof AxiosError) {
+        const serverError = error.response?.data as ApiErrorResponse
+        errorMessage = serverError?.message || error.message || errorMessage
+      } else if (error instanceof Error) {
+        errorMessage = error.message
       }
 
-      const data = await response.json()
-      set({ studentHistory: data, isLoading: false })
-    } catch (error) {
-      console.error(error)
       set({
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
+        error: errorMessage,
         isLoading: false,
       })
+      console.error('fetchStudentHistory error:', error)
     }
   },
 
   registerAttendance: async (data, token) => {
-    try {
-      set({ isLoading: true, error: null, message: null })
+    set({ isLoading: true, error: null, message: null })
 
-      const response = await fetch('http://31.97.26.156:3333/attendance', {
-        method: 'POST',
+    try {
+      const response = await api.post<AttendanceResponse>('/attendance', data, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
       })
 
-      const responseData = await response.json()
-
-      // Mesmo se for status 200 (já registrado), queremos capturar a mensagem
-      if (response.ok) {
-        set({
-          message: responseData.message || 'Presença registrada com sucesso',
-          isLoading: false,
-        })
-        return responseData
-      } else {
-        throw new Error(responseData.message || 'Erro ao registrar presença')
-      }
-    } catch (error) {
-      console.error(error)
       set({
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
+        message: response.data.message || 'Presença registrada com sucesso',
         isLoading: false,
       })
+
+      return response.data
+    } catch (error) {
+      let errorMessage = 'Erro ao registrar presença'
+
+      if (error instanceof AxiosError) {
+        const serverError = error.response?.data as ApiErrorResponse
+        errorMessage = serverError?.message || error.message || errorMessage
+      } else if (error instanceof Error) {
+        errorMessage = error.message
+      }
+
+      set({
+        error: errorMessage,
+        isLoading: false,
+      })
+      console.error('registerAttendance error:', error)
       return null
     }
   },

@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 
+import { api } from '@/lib/api' // Import your configured axios instance
+
 interface Meeting {
   name: string
 }
@@ -12,7 +14,7 @@ interface ProgramMinimum {
 }
 
 interface ProgramMinimumStore {
-  programMinimum: ProgramMinimum[] | null // Alterado para array de ProgramMinimum
+  programMinimum: ProgramMinimum[] | null
   fetchProgramMinimum: (token: string) => Promise<void>
 }
 
@@ -21,24 +23,22 @@ export const useProgramMinimumStore = create<ProgramMinimumStore>((set) => ({
 
   fetchProgramMinimum: async (token) => {
     try {
-      const response = await fetch(`http://31.97.26.156:3333/program-minimum`, {
-        method: 'GET',
+      const response = await api.get('/program-minimum', {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       })
 
-      if (!response.ok) {
-        throw new Error('Erro ao buscar dados do Programa Mínimo')
-      }
-
-      const data = await response.json()
-
-      // Ajuste para garantir que os dados recebidos sejam um array
-      set({ programMinimum: Array.isArray(data) ? data : [data] })
+      // Ensure the data is an array
+      set({
+        programMinimum: Array.isArray(response.data)
+          ? response.data
+          : [response.data],
+      })
     } catch (error) {
-      console.error(error)
+      console.error('Error fetching Program Minimum:', error)
+      throw new Error('Failed to fetch Program Minimum data')
     }
   },
 }))

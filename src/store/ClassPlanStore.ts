@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 
+import { api } from '@/lib/api' // Importe sua instância do axios configurada
+
 interface ClassPlan {
   id: string
   group: string
@@ -21,7 +23,10 @@ interface ClassPlanStore {
   setClassPlans: (classPlans: ClassPlan[]) => void
   setSelectedGroup: (group: string) => void
   fetchClassPlans: (token: string) => Promise<void>
-  createClassPlan: (payload: ClassPlanCreatePayload, token: string) => Promise<boolean>
+  createClassPlan: (
+    payload: ClassPlanCreatePayload,
+    token: string,
+  ) => Promise<boolean>
 }
 
 export const useClassPlanStore = create<ClassPlanStore>((set) => ({
@@ -32,41 +37,32 @@ export const useClassPlanStore = create<ClassPlanStore>((set) => ({
 
   fetchClassPlans: async (token) => {
     try {
-      const response = await fetch('http://31.97.26.156:3333/class-plan', {
-        method: 'GET',
+      const response = await api.get('/class-plan', {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       })
 
-      if (!response.ok) {
-        throw new Error('Erro ao buscar os planos de aula')
-      }
-
-      const data = await response.json()
-      set({ classPlans: data })
+      set({ classPlans: response.data })
     } catch (error) {
-      console.error(error)
+      console.error('Erro ao buscar os planos de aula:', error)
+      throw new Error('Erro ao buscar os planos de aula')
     }
   },
 
   createClassPlan: async (payload, token) => {
     try {
-      const response = await fetch('http://31.97.26.156:3333/class-plan', {
-        method: 'POST',
+      const response = await api.post('/class-plan', payload, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
       })
 
-      if (!response.ok) throw new Error('Erro ao criar plano de aula')
-
-      return true
+      return response.status === 201
     } catch (error) {
-      console.error('Erro ao criar aula:', error)
+      console.error('Erro ao criar plano de aula:', error)
       return false
     }
   },

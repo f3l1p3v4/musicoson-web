@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { useForm } from 'react-hook-form'
 // import { Link, useNavigate } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
@@ -8,6 +7,7 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { api } from '@/lib/api'
 import { useAuthStore } from '@/store/authStore'
 
 import LogoImg from '../../assets/logo.png'
@@ -34,10 +34,7 @@ export function SignIn() {
 
   async function handleSignIn(data: SignInForm) {
     try {
-      const response = await axios.post(
-        'http://31.97.26.156:3333/users/login',
-        data,
-      )
+      const response = await api.post('/users/login', data)
 
       const { token } = response.data
 
@@ -63,7 +60,7 @@ export function SignIn() {
           <Link to="/sign-up">Fazer cadastro</Link>
         </Button> */}
 
-        <div className="xs:w-[350px] flex w-full flex-col justify-center gap-6 px-2">
+        <div className="flex w-full flex-col justify-center gap-6 px-2 xs:w-[350px]">
           <div className="flex flex-col items-center gap-2 text-center">
             <img src={LogoImg} className="w-48" alt="" />
             <p className="text-sm text-muted-foreground">Falta pouco...</p>

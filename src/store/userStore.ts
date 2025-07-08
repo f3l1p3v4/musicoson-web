@@ -1,4 +1,7 @@
+import { AxiosError } from 'axios'
 import { create } from 'zustand'
+
+import { api } from '@/lib/api'
 
 interface User {
   id: string
@@ -44,56 +47,55 @@ export const userStore = create<UserStore>((set) => ({
 
   fetchUsers: async (token: string) => {
     try {
-      const response = await fetch('http://31.97.26.156:3333/users', {
+      const response = await api.get<User[]>('/users', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
-
-      if (!response.ok) {
-        throw new Error('Erro ao buscar usuários')
-      }
-
-      const data = await response.json()
-      set({ users: data })
+      set({ users: response.data })
     } catch (error) {
-      console.error(error)
+      console.error('Error fetching users:', error)
+      throw new Error(
+        error instanceof AxiosError
+          ? error.response?.data?.message || 'Erro ao buscar usuários'
+          : 'Erro ao buscar usuários',
+      )
     }
   },
 
   createUser: async (data: CreateUserInput, token: string) => {
     try {
-      const response = await fetch('http://31.97.26.156:3333/users/register', {
-        method: 'POST',
+      const response = await api.post('/users/register', data, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(data),
       })
-
-      return response.ok
+      return response.status === 201
     } catch (error) {
-      console.error('Erro ao cadastrar usuário:', error)
+      console.error('Error creating user:', error)
+      if (error instanceof AxiosError) {
+        console.error('Server response:', error.response?.data)
+      }
       return false
     }
   },
 
   updateUser: async (data: UpdateUserInput, token: string) => {
     try {
-      const response = await fetch(`http://31.97.26.156:3333/users/${data.id}`, {
-        method: 'PUT',
+      const response = await api.put(`/users/${data.id}`, data, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(data),
       })
-
-      return response.ok
+      return response.status === 200
     } catch (error) {
-      console.error('Erro ao atualizar usuário:', error)
+      console.error('Error updating user:', error)
+      if (error instanceof AxiosError) {
+        console.error('Server response:', error.response?.data)
+      }
       return false
     }
-  }
+  },
 }))

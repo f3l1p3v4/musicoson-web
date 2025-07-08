@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -16,7 +17,8 @@ import {
 } from '@/components/ui/select'
 import { useAuthStore } from '@/store/authStore'
 import { userStore } from '@/store/userStore'
-import { toast } from 'sonner'
+
+import { api } from '../../../lib/api'
 
 interface User {
   id: string
@@ -53,24 +55,22 @@ export function UserDetails({ user }: Props) {
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`http://31.97.26.156:3333/users/${user.id}`, {
-        method: 'PUT',
+      const response = await api.put(`/users/${user.id}`, form, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(form),
       })
 
-      if (response.ok) {
+      if (response.status === 200) {
         if (token) {
           fetchUsers(token)
         } else {
           toast.error('Token de autenticação ausente!')
         }
-         toast.success('Usuário atualizado com sucesso!')
+        toast.success('Usuário atualizado com sucesso!')
       } else {
-         toast.error('Erro ao atualizar usuário')
+        toast.error('Erro ao atualizar usuário')
       }
     } catch (error) {
       console.error('Erro ao atualizar usuário:', error)

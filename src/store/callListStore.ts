@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+import { api } from '@/lib/api'
+
 interface StudentAttendance {
   date: string
   status: string
@@ -59,25 +61,19 @@ export const useAttendanceStore = create<AttendanceStore>()(
 
       fetchStudentsAttendance: async (token) => {
         try {
-          const response = await fetch(
-            'http://31.97.26.156:3333/attendance/students',
-            {
-              method: 'GET',
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-            }
-          )
-
-          if (!response.ok) {
-            throw new Error('Erro ao buscar lista de chamada')
-          }
-
-          const data = await response.json()
-          set({ students: Array.isArray(data) ? data : [data] })
+          const response = await api.get('/attendance/students', {
+            headers: {
+              Authorization: `Bearer ${token}`, // Uso explícito
+            },
+          })
+          set({
+            students: Array.isArray(response.data)
+              ? response.data
+              : [response.data],
+          })
         } catch (error) {
-          console.error(error)
+          console.error('Erro ao buscar lista de chamada:', error)
+          throw new Error('Erro ao buscar lista de chamada')
         }
       },
 
@@ -89,21 +85,22 @@ export const useAttendanceStore = create<AttendanceStore>()(
         token,
       }) => {
         try {
-          const response = await fetch('http://31.97.26.156:3333/attendance', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
+          const response = await api.post(
+            '/attendance',
+            {
+              date,
+              studentId,
+              instructorId,
+              status,
             },
-            body: JSON.stringify({ date, studentId, instructorId, status }),
-          })
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          )
 
-          if (!response.ok) throw new Error('Erro ao marcar presença')
-
-          const responseData = await response.json()
-          const responseStatus = response.status
-
-          if (responseStatus === 201) {
+          if (response.status === 201) {
             set((state) => {
               if (!state.students) return { students: null }
 
@@ -112,7 +109,7 @@ export const useAttendanceStore = create<AttendanceStore>()(
                   const newAttendance = {
                     date,
                     status,
-                    classNumber: responseData.classNumber,
+                    classNumber: response.data.classNumber,
                   }
 
                   return {
@@ -130,8 +127,13 @@ export const useAttendanceStore = create<AttendanceStore>()(
             })
           }
 
-          return { success: true, responseData, responseStatus }
+          return {
+            success: true,
+            responseData: response.data,
+            responseStatus: response.status,
+          }
         } catch (error) {
+          console.error('Erro ao marcar presença:', error)
           return {
             success: false,
             responseData: { message: 'Erro ao registrar chamada' },
@@ -142,29 +144,23 @@ export const useAttendanceStore = create<AttendanceStore>()(
 
       updateAttendance: async ({ attendanceId, status, token }) => {
         try {
-          const response = await fetch(
-            `http://31.97.26.156:3333/attendance/${attendanceId}`,
+          const response = await api.put(
+            `/attendance/${attendanceId}`,
+            { status },
             {
-              method: 'PUT',
               headers: {
-                'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
               },
-              body: JSON.stringify({ status }),
-            }
+            },
           )
-
-          if (!response.ok) throw new Error('Erro ao atualizar presença')
-
-          const responseData = await response.json()
 
           return {
             success: true,
-            responseData,
+            responseData: response.data,
             responseStatus: response.status,
           }
         } catch (error) {
-          console.error('Erro ao atualizar chamada:', error)
+          console.error('Erro ao atualizar presença:', error)
           return {
             success: false,
             responseData: { message: 'Erro ao atualizar presença' },
@@ -178,6 +174,6 @@ export const useAttendanceStore = create<AttendanceStore>()(
       partialize: (state) => ({
         currentStudentIndex: state.currentStudentIndex,
       }),
-    }
-  )
+    },
+  ),
 )

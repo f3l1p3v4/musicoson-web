@@ -1,5 +1,6 @@
-import axios from 'axios'
 import { create } from 'zustand'
+
+import { api } from '@/lib/api'
 
 interface User {
   id: string
@@ -27,16 +28,24 @@ export const useProfileStore = create<ProfileStoreState>((set) => ({
     set({ loading: true, error: null })
 
     try {
-      const response = await axios.get<User>(
-        `http://31.97.26.156:3333/users/${userId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
+      const response = await api.get<User>(`/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-      )
-      set({ user: response.data, loading: false })
+      })
+
+      set({
+        user: response.data,
+        loading: false,
+      })
     } catch (error) {
-      set({ error: 'Erro ao carregar perfil', loading: false })
+      set({
+        error: 'Erro ao carregar perfil',
+        loading: false,
+      })
       console.error('Erro ao buscar usuário:', error)
+      throw error // Opcional: propagar o erro para tratamento externo
     }
   },
 }))
