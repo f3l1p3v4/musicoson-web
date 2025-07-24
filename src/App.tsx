@@ -10,7 +10,7 @@ import { router } from './routes'
 export function App() {
   return (
     <div>
-      <ThemeProvider defaultTheme="light" storageKey="pizzashop-theme">
+      <ThemeProvider defaultTheme="dark" storageKey="pizzashop-theme">
         <Toaster richColors />
         <RouterProvider router={router} />
       </ThemeProvider>
