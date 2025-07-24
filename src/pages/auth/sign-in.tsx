@@ -65,7 +65,7 @@ export function SignIn() {
             <img src={LogoImg} className="w-48" alt="" />
             <p className="text-sm text-muted-foreground">Falta pouco...</p>
             <p className="text-sm text-muted-foreground">
-              Para desbloquear seu potencial musical! TESTE
+              Para desbloquear seu potencial musical!
             </p>
           </div>
 
