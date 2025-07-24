@@ -1,9 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useParams } from 'react-router-dom'
-
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -30,11 +28,11 @@ export function Frequency() {
     <section className="grid gap-2">
       <button
         onClick={() => navigate(-1)}
-        className="mb-2 text-[14px] w-max rounded py-2 hover:pointer"
+        className="hover:pointer mb-2 w-max rounded py-2 text-[14px]"
       >
         ← Voltar
       </button>
-      <h1 className="mb-6 text-center text-xl xs:text-3xl font-bold">
+      <h1 className="mb-6 text-center text-xl font-bold xs:text-3xl">
         Frequência nas Aulas
       </h1>
 
@@ -43,15 +41,12 @@ export function Frequency() {
           <Card key={item.id} className="w-full">
             <CardHeader className="flex-row items-center justify-between space-y-0 pb-1">
               <CardTitle className="text-sm font-medium">
-                {new Date(item.date).toLocaleDateString(
-                  'pt-BR',
-                  {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    timeZone: 'UTC',
-                  },
-                )}
+                {new Date(item.date).toLocaleDateString('pt-BR', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  timeZone: 'UTC',
+                })}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-1">
