@@ -39,7 +39,7 @@ export function Frequency() {
       {studentHistory.length > 0 ? (
         studentHistory.map((item) => (
           <Card key={item.id} className="w-full">
-            <CardHeader className="flex-row items-center justify-between space-y-0 pb-1">
+            <CardHeader className="flex-row items-center justify-between space-y-0 xs:pb-0">
               <CardTitle className="text-sm font-medium">
                 {new Date(item.date).toLocaleDateString('pt-BR', {
                   day: '2-digit',
@@ -49,7 +49,7 @@ export function Frequency() {
                 })}
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-1">
+            <CardContent className="space-y-1 xs:pt-2">
               <p className="mt-1 text-xs font-bold">{item.subject}</p>
               <p className="mt-2 text-xs">PG {item.page}</p>
               <p className="mt-2 text-xs">Exercício: {item.exercise}</p>

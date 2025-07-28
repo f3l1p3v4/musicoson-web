@@ -10,7 +10,7 @@ export function Frequency() {
   return (
     <NavLink className="flex w-full" to={`/frequency/${id}`}>
       <Card className="flex w-full flex-col justify-between">
-        <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
+        <CardHeader className="flex-row items-center justify-between space-y-0 xs:pb-0">
           <CardTitle className="text-base font-semibold">Frequência</CardTitle>
         </CardHeader>
         <CardContent className="space-y-1">

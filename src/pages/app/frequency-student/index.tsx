@@ -51,14 +51,14 @@ export function FrequencyStudent() {
               key={student.id}
             >
               <Card className="w-full cursor-pointer">
-                <CardHeader className="flex-row items-center justify-between space-y-0 pb-1">
+                <CardHeader className="flex-row items-center justify-between space-y-0 xs:pb-0">
                   <CardTitle className="text-sm font-medium">
                     {student.group in groupMap
                       ? `Grupo ${groupMap[student.group]}`
                       : 'Grupo Desconhecido'}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-1">
+                <CardContent className="space-y-1 xs:pt-2">
                   <p className="text-md mt-1 font-bold">{student.name}</p>
                   <p className="mt-2 text-xs">{student.instrument}</p>
                   <p

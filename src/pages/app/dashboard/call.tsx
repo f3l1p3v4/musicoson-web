@@ -7,7 +7,7 @@ export function Call() {
   return (
     <NavLink className="flex w-full gap-2" to="/call-list">
       <Card className="w-full">
-        <CardHeader className="flex-row items-center justify-between space-y-0 pb-3">
+        <CardHeader className="flex-row items-center justify-between space-y-0 pb-3 xs:pb-0">
           <CardTitle className="text-sm font-semibold sm:text-base">
             Lista de Chamada
           </CardTitle>

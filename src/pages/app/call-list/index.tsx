@@ -244,7 +244,7 @@ export function CallList() {
                   }`}
                   onClick={() => handleOpenDialog(student, index)}
                 >
-                  <CardHeader className="flex-row items-center justify-between space-y-0 pb-1">
+                  <CardHeader className="flex-row items-center justify-between space-y-0 xs:pb-0">
                     <CardTitle className="text-sm font-medium">
                       {groupMap[student.group]
                         ? `Grupo ${groupMap[student.group]}`
@@ -263,7 +263,7 @@ export function CallList() {
                       )}
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-1">
+                  <CardContent className="space-y-1 xs:pt-2">
                     <p className="text-md mt-1 font-bold">{student.name}</p>
                     <p className="mt-2 text-xs">{student.instrument}</p>
                     <section className="flex gap-2 pt-2">

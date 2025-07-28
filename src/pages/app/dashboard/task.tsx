@@ -7,7 +7,7 @@ export function Task() {
   return (
     <NavLink className="flex w-full gap-2" to="/tasks">
       <Card className="w-full">
-        <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
+        <CardHeader className="flex-row items-center justify-between space-y-0 xs:pb-0">
           <CardTitle className="text-base font-semibold">Tarefas</CardTitle>
         </CardHeader>
         <CardContent className="space-y-1">
