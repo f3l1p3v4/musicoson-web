@@ -49,7 +49,7 @@ export function ProgramMinimum() {
           {(['meetings', 'cults', 'officialization'] as const).map(
             (category: keyof typeof program) => (
               <Card key={category} className="mb-2 w-full">
-                <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
+                <CardHeader className="flex-row items-center justify-between space-y-0 xs:pt-0">
                   <CardTitle className="text-base font-semibold">
                     {category === 'meetings'
                       ? 'Culto de Jovens'
@@ -58,7 +58,7 @@ export function ProgramMinimum() {
                         : 'Oficialização'}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-1">
+                <CardContent className="space-y-1 xs:pt-2">
                   {Array.isArray(program[category]) &&
                   program[category].length > 0 ? (
                     program[category].map((item, index) => (
