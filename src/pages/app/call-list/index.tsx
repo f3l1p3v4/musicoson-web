@@ -122,8 +122,7 @@ export function CallList() {
     if (isMarkedToday) {
       setSelectedStudent({
         ...student,
-        studentAttendance: student.studentAttendance.map((attendance, index) => ({
-          id: `${student.id}-${index}`,
+        studentAttendance: student.studentAttendance.map((attendance) => ({
           ...attendance,
         })),
       })
@@ -150,8 +149,7 @@ export function CallList() {
 
     setSelectedStudent({
       ...student,
-      studentAttendance: student.studentAttendance.map((attendance, index) => ({
-        id: `${student.id}-${index}`,
+      studentAttendance: student.studentAttendance.map((attendance) => ({
         ...attendance,
       })),
     })
