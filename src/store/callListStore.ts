@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware'
 import { api } from '@/lib/api'
 
 interface StudentAttendance {
+  id: string
   date: string
   status: string
   classNumber: number
@@ -107,6 +108,7 @@ export const useAttendanceStore = create<AttendanceStore>()(
               const updatedStudents = state.students.map((student) => {
                 if (student.id === studentId) {
                   const newAttendance = {
+                    id: response.data.attendanceId || '',
                     date,
                     status,
                     classNumber: response.data.classNumber,
@@ -153,6 +155,35 @@ export const useAttendanceStore = create<AttendanceStore>()(
               },
             },
           )
+
+          if (response.status === 200) {
+            set((state) => {
+              if (!state.students) return { students: null }
+
+              const updatedStudents = state.students.map((student) => {
+                const attendanceIndex = student.studentAttendance.findIndex(
+                  (att) => att.id === attendanceId,
+                )
+
+                if (attendanceIndex > -1) {
+                  const updatedAttendance = [...student.studentAttendance]
+                  updatedAttendance[attendanceIndex] = {
+                    ...updatedAttendance[attendanceIndex],
+                    status,
+                  }
+
+                  return {
+                    ...student,
+                    studentAttendance: updatedAttendance,
+                  }
+                }
+
+                return student
+              })
+
+              return { students: updatedStudents }
+            })
+          }
 
           return {
             success: true,

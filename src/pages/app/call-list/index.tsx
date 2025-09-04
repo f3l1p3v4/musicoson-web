@@ -16,6 +16,7 @@ export function CallList() {
     students,
     fetchStudentsAttendance,
     markAttendance,
+    updateAttendance: updateAttendanceStore,
     currentStudentIndex,
     setCurrentStudentIndex,
   } = useAttendanceStore()
@@ -107,10 +108,28 @@ export function CallList() {
       name: string
       group: string
       instrument: string
-      studentAttendance: { date: string; status: string }[]
+      studentAttendance: { id: string; date: string; status: string }[]
     },
     index: number,
   ) {
+    const today = new Date().toISOString().split('T')[0]
+    const lastAttendance = student.studentAttendance.at(-1)
+    const isMarkedToday = lastAttendance?.date
+      ? new Date(lastAttendance.date).toISOString().split('T')[0] === today
+      : false
+
+    // Permite abrir o diálogo para edição se a chamada já foi feita
+    if (isMarkedToday) {
+      setSelectedStudent({
+        ...student,
+        studentAttendance: student.studentAttendance.map((attendance, index) => ({
+          id: `${student.id}-${index}`,
+          ...attendance,
+        })),
+      })
+      return
+    }
+
     // Verifica se a chamada do dia já foi finalizada
     if (isTodaysCallFinished()) {
       toast.warning('A chamada de hoje já foi finalizada.')
@@ -129,20 +148,6 @@ export function CallList() {
       return
     }
 
-    // Verifica se este aluno já teve presença marcada hoje
-    const today = new Date().toISOString().split('T')[0]
-    const lastAttendance = student.studentAttendance.at(-1)
-
-    if (lastAttendance?.date) {
-      const attendanceDate = new Date(lastAttendance.date)
-        .toISOString()
-        .split('T')[0]
-      if (attendanceDate === today) {
-        toast.warning('Este aluno já teve sua presença registrada hoje.')
-        return
-      }
-    }
-
     setSelectedStudent({
       ...student,
       studentAttendance: student.studentAttendance.map((attendance, index) => ({
@@ -159,7 +164,7 @@ export function CallList() {
       name: string
       group: string
       instrument: string
-      studentAttendance: { date: string; status: string }[]
+      studentAttendance: { id: string; date: string; status: string }[]
     },
     index: number,
   ) {
@@ -305,8 +310,16 @@ export function CallList() {
                   student={{
                     id: selectedStudent.id,
                     name: selectedStudent.name,
-                    attendanceId: selectedStudent.studentAttendance[0]?.id,
-                    currentStatus: selectedStudent.studentAttendance[0]?.status,
+                    attendanceId: selectedStudent.studentAttendance.find(
+                      (att) =>
+                        new Date(att.date).toISOString().split('T')[0] ===
+                        new Date().toISOString().split('T')[0],
+                    )?.id,
+                    currentStatus: selectedStudent.studentAttendance.find(
+                      (att) =>
+                        new Date(att.date).toISOString().split('T')[0] ===
+                        new Date().toISOString().split('T')[0],
+                    )?.status,
                   }}
                   instructorId={id || ''}
                   token={token || ''}
@@ -318,6 +331,18 @@ export function CallList() {
 
                     if (result.success) {
                       setCurrentStudentIndex(currentStudentIndex + 1)
+                      setSelectedStudent(null)
+                    }
+
+                    return result
+                  }}
+                  updateAttendance={async (data) => {
+                    const result = await updateAttendanceStore({
+                      ...data,
+                      token: token || '',
+                    })
+
+                    if (result.success) {
                       setSelectedStudent(null)
                     }
 

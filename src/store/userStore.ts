@@ -9,7 +9,7 @@ interface User {
   instrument?: string
   group?: string
   role: string
-  email: string
+  email: string 
   phone?: string
   practical_level?: string
 }

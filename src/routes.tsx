@@ -1,26 +1,49 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { isTokenExpired } from '@/utils/auth'
 
+import { isTokenExpired } from '@/utils/auth'
 import { useAuthStore } from '@/store/authStore'
 
-import { AppLayout } from './pages/_layouts/app'
-import { AuthLayout } from './pages/_layouts/auth'
-import { NotFound } from './pages/404'
-import { AlertFrequency } from './pages/app/alert-frequency'
-import { CallList } from './pages/app/call-list'
-import { ClassPlan } from './pages/app/class-plan'
-import { Dashboard } from './pages/app/dashboard'
-import { Frequency } from './pages/app/frequency'
-import { FrequencyStudent } from './pages/app/frequency-student'
-import { Perfil } from './pages/app/perfil'
-import { PerfilEdit } from './pages/app/perfil-edit'
-import { ProgramMinimum } from './pages/app/program-minimum'
-import { Tasks } from './pages/app/tasks'
-import { Users } from './pages/app/users'
-import { Warnings } from './pages/app/warnings'
+// Auth
 import { SignIn } from './pages/auth/sign-in'
 import { SignUp } from './pages/auth/sign-up'
+
+// Not Found
+import { NotFound } from './pages/404'
+
+//Layouts
+import { AppLayout } from './pages/_layouts/app'
+import { AuthLayout } from './pages/_layouts/auth'
+
+//Users
+import { Users } from './pages/app/users'
+
+//Perfil
+import { Perfil } from './pages/app/perfil'
+import { PerfilEdit } from './pages/app/perfil-edit'
+
+//Dashboard
+import { Dashboard } from './pages/app/dashboard'
+
+//Frequency
+import { Frequency } from './pages/app/frequency'
+import { FrequencyStudent } from './pages/app/frequency-student'
+import { AlertFrequency } from './pages/app/alert-frequency'
+
+//Call List
+import { CallList } from './pages/app/call-list'
+
+// Class Plan
+import { ClassPlan } from './pages/app/class-plan'
+
+//Program Minimum
+import { ProgramMinimum } from './pages/app/program-minimum'
+
+//Tasks
+import { Tasks } from './pages/app/tasks'
+
+//Warnings
+import { Warnings } from './pages/app/warnings'
 
 type UserRole = 'INSTRUCTOR' | 'STUDENT' | 'ADMIN'
 

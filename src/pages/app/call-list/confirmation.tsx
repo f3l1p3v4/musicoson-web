@@ -27,6 +27,14 @@ interface ConfirmationProps {
     responseData: { message: string; attendanceId?: string }
     responseStatus: number
   }>
+  updateAttendance: (data: {
+    attendanceId: string
+    status: string
+  }) => Promise<{
+    success: boolean
+    responseData: { message: string }
+    responseStatus: number
+  }>
   onSuccessClose: () => void
 }
 
@@ -34,21 +42,36 @@ export function Confirmation({
   student,
   instructorId,
   markAttendance,
+  updateAttendance,
   onSuccessClose,
 }: ConfirmationProps) {
   async function handleAttendance(status: string) {
-    const response = await markAttendance({
-      date: new Date().toISOString(),
-      studentId: student.id,
-      instructorId,
-      status,
-    })
+    if (student.attendanceId) {
+      const response = await updateAttendance({
+        attendanceId: student.attendanceId,
+        status,
+      })
 
-    if (response.success) {
-      toast.success(response.responseData.message)
-      onSuccessClose()
+      if (response.success) {
+        toast.success(response.responseData.message)
+        onSuccessClose()
+      } else {
+        toast.error(response.responseData.message)
+      }
     } else {
-      toast.error(response.responseData.message)
+      const response = await markAttendance({
+        date: new Date().toISOString(),
+        studentId: student.id,
+        instructorId,
+        status,
+      })
+
+      if (response.success) {
+        toast.success(response.responseData.message)
+        onSuccessClose()
+      } else {
+        toast.error(response.responseData.message)
+      }
     }
   }
 
