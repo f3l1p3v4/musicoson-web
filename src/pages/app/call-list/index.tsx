@@ -141,6 +141,7 @@ export function CallList() {
         toast.warning('Este aluno já teve sua presença registrada hoje.')
       } else {
         toast.error(
+          
           'Você precisa marcar presença dos alunos na ordem da lista.',
         )
       }
