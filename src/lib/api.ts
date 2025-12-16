@@ -24,7 +24,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Tratamento para token expirado/inválido
+      // Tratamento para token expirado/inválidos
       useAuthStore.getState().logout()
     }
     return Promise.reject(error)
