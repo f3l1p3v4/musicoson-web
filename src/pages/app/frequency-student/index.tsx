@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuthStore } from '@/store/authStore'
 import { useAttendanceStore } from '@/store/callListStore'
@@ -24,6 +25,18 @@ export function FrequencyStudent() {
     GROUP_02: '02',
     GROUP_03: '03',
     GROUP_04: '04',
+  }
+
+const getBadgeColor = (faltas: number) => {
+    if (faltas === 0) return 'bg-green-500 hover:bg-green-600'
+    if (faltas >= 1 && faltas <= 3) return 'bg-gray-500 hover:bg-gray-600'
+    return 'bg-red-500 hover:bg-red-600'
+  }
+
+  const getFaltasText = (faltas: number) => {
+    if (faltas === 0) return 'Nenhuma falta'
+    if (faltas === 1) return '1 Falta'
+    return `${faltas} Faltas`
   }
 
   return (
@@ -61,13 +74,12 @@ export function FrequencyStudent() {
                 <CardContent className="space-y-1 xs:pt-2">
                   <p className="text-md mt-1 font-bold">{student.name}</p>
                   <p className="mt-2 text-xs">{student.instrument}</p>
-                  <p
-                    className={`mt-2 text-xs ${
-                      totalFaltas > 3 ? 'font-bold text-red-500' : ''
-                    }`}
+                  <Badge
+                    variant="default"
+                    className={`mt-2 border-none text-white ${getBadgeColor(totalFaltas)}`}
                   >
-                    {totalFaltas} {totalFaltas === 1 ? 'Falta' : 'Faltas'}
-                  </p>
+                    {getFaltasText(totalFaltas)}
+                  </Badge>
                 </CardContent>
               </Card>
             </NavLink>

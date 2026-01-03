@@ -5,8 +5,7 @@ import { ThemeProvider } from '@/components/theme/theme-provider'
 
 import { router } from './routes'
 
-import './index.css' // tailwind
-
+import './index.css'
 export function App() {
   return (
     <div>
