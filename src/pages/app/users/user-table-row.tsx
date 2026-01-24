@@ -12,6 +12,7 @@ interface User {
   role: string
   email: string
   phone?: string
+  practical_level?: string
 }
 
 interface Props {
@@ -36,6 +37,12 @@ export function UserTableRow({ user }: Props) {
     GROUP_04: '04',
   }
 
+  const levelMap: Record<string, string> = {
+    C_JOVEM: 'C. de Jovem',
+    C_OFICIAL: 'C. Oficial',
+    OFICIALIZACAO: 'Oficialização',
+  }
+
   return (
     <TableRow>
       <TableCell>
@@ -54,6 +61,7 @@ export function UserTableRow({ user }: Props) {
       <TableCell className='text-xs xs:text-sm'>{user.instrument || '-'}</TableCell>
       <TableCell className='text-xs xs:text-sm'>{user.group ? groupMap[user.group] : '-'}</TableCell>
       <TableCell className='text-xs xs:text-sm'>{roleMap[user.role] || user.role}</TableCell>
+      <TableCell className='text-xs xs:text-sm'>{user.practical_level ? levelMap[user.practical_level] : '-'}</TableCell>
       <TableCell className='text-xs xs:text-sm'>{user.email}</TableCell>
       <TableCell className='text-xs xs:text-sm'>{user.phone || '-'}</TableCell>
     </TableRow>

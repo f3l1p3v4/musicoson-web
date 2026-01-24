@@ -65,6 +65,7 @@ export function Users() {
                 <TableHead className='text-xs xs:text-sm'>Instrumento</TableHead>
                 <TableHead className='text-xs xs:text-sm'>Grupo</TableHead>
                 <TableHead className='text-xs xs:text-sm'>Tipo de Usuário</TableHead>
+                <TableHead className='text-xs xs:text-sm'>Nível Prático</TableHead>
                 <TableHead className='text-xs xs:text-sm'>E-mail</TableHead>
                 <TableHead className='text-xs xs:text-sm'>Celular</TableHead>
               </TableRow>
