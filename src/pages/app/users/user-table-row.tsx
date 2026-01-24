@@ -26,6 +26,7 @@ export function UserTableRow({ user }: Props) {
   const roleMap: Record<string, string> = {
     INSTRUCTOR: 'Instrutor',
     STUDENT: 'Aluno',
+    DISABLED: 'Desabilitado',
   }
 
   const groupMap: Record<string, string> = {

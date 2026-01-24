@@ -7,7 +7,7 @@ import { useAttendanceStore } from '@/store/callListStore'
 import { Call } from './call'
 import { Frequency } from './frequency'
 import { FrequencyStudent } from './frequency-student'
-// import { Task } from './task'
+import { Task } from './task'
 // import { TaskStudent } from './task-student'
 
 export function Dashboard() {
@@ -67,11 +67,11 @@ export function Dashboard() {
         </h1>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-          {/* <Task /> */}
+          {role === 'INSTRUCTOR' && <Task />}
           {role === 'INSTRUCTOR' && <Call />}
           {role === 'INSTRUCTOR' && (
             <FrequencyStudent qtdStudents={students?.length ?? 0} />
-          )}
+          )}  
           {/* <TaskStudent /> */}
           {role === 'STUDENT' && <Frequency />}
         </div>
