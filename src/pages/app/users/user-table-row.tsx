@@ -60,7 +60,12 @@ export function UserTableRow({ user }: Props) {
       <TableCell className='text-xs xs:text-sm'>{user.name}</TableCell>
       <TableCell className='text-xs xs:text-sm'>{user.instrument || '-'}</TableCell>
       <TableCell className='text-xs xs:text-sm'>{user.group ? groupMap[user.group] : '-'}</TableCell>
-      <TableCell className='text-xs xs:text-sm'>{roleMap[user.role] || user.role}</TableCell>
+      <TableCell 
+        className={`text-xs xs:text-sm ${
+          user.role === 'INSTRUCTOR' ? 'text-primary font-bold'
+            : ''
+        }`}
+      >{roleMap[user.role] || user.role}</TableCell>
       <TableCell className='text-xs xs:text-sm'>{user.practical_level ? levelMap[user.practical_level] : '-'}</TableCell>
       <TableCell className='text-xs xs:text-sm'>{user.email}</TableCell>
       <TableCell className='text-xs xs:text-sm'>{user.phone || '-'}</TableCell>

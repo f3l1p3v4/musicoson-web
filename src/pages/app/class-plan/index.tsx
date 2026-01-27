@@ -11,7 +11,6 @@ import { useAuthStore } from '@/store/authStore'
 import { useClassPlanStore } from '@/store/ClassPlanStore'
 import { useProfileStore } from '@/store/profileStore'
 
-// import { UserTableFilters } from '../users/user-table-filters'
 import { ClassPlanCard } from './class-plan-card'
 import { ClassPlanCreate } from './class-plan-create'
 
@@ -59,7 +58,6 @@ export function ClassPlan() {
         <h1 className="text-xl font-bold tracking-tight xs:text-3xl">
           Plano de Aulas
         </h1>
-        {/* <UserTableFilters /> */}
       </div>
       <Tabs
         value={selectedGroup}
