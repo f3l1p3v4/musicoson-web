@@ -120,12 +120,20 @@ export function ProgramMinimum() {
                         {Array.isArray(program[category]) &&
                         (program[category] as any[]).length > 0 ? (
                           (program[category] as any[]).map((item, index) => (
-                            <p key={index} className="text-xs text-slate-600 leading-relaxed mb-1 last:mb-0">
+                            <p 
+                              key={index} 
+                              className={`text-xs leading-relaxed mb-1 last:mb-0 ${
+                                item.name.startsWith("Obs") 
+                                  ? "font-bold text-slate-600 mt-2" 
+                                  : "text-slate-600"
+                              }`}
+                            >
                               {item.name}
-                              {index < (program[category] as any[]).length - 1 && (
-                                <span className="mx-2 inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
-                                  OU
-                                </span>
+                              {index < (program[category] as any[]).length - 1 && 
+                                !(program[category] as any[])[index + 1].name.startsWith("Obs") && (
+                                  <span className="mx-2 inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+                                    OU
+                                  </span>
                               )}
                             </p>
                           ))
