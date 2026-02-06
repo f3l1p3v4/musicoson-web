@@ -8,7 +8,7 @@ import { Call } from './call'
 import { Frequency } from './frequency'
 import { FrequencyStudent } from './frequency-student'
 import { Task } from './task'
-// import { TaskStudent } from './task-student'
+import { TaskStudent } from './task-student'
 
 export function Dashboard() {
   const { userName, role, token } = useAuthStore()
@@ -72,7 +72,7 @@ export function Dashboard() {
           {role === 'INSTRUCTOR' && (
             <FrequencyStudent qtdStudents={students?.length ?? 0} />
           )}  
-          {/* <TaskStudent /> */}
+          {role === 'STUDENT' && <TaskStudent />}
           {role === 'STUDENT' && <Frequency />}
         </div>
       </div>

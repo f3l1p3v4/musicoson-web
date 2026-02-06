@@ -1,6 +1,9 @@
-import { X } from 'lucide-react'
-import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { X, Loader2, Users, User as UserIcon } from 'lucide-react'
+import { useState, useEffect } from 'react'
+
+import { useTaskStore, TaskCategory, Group } from '@/store/taskStore'
+import { useAuthStore } from '@/store/authStore'
+import { userStore } from '@/store/userStore' // Certifique-se que o store de usuários existe
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -13,366 +16,180 @@ import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
 
 export function TaskCreate() {
-  const [selectedCategory, setSelectedCategory] = useState('')
+  const { createTask } = useTaskStore()
+  const { users, fetchUsers } = userStore()
+  const { token } = useAuthStore()
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState<TaskCategory | ''>('')
+  const [description, setDescription] = useState('')
+  const [observation, setObservation] = useState('')
   const [pageInput, setPageInput] = useState('')
   const [lessonInput, setLessonInput] = useState('')
+  const [hymnInput, setHymnInput] = useState('')
+  
   const [selectedPages, setSelectedPages] = useState<number[]>([])
   const [selectedLessons, setSelectedLessons] = useState<number[]>([])
   const [selectedHymns, setSelectedHymns] = useState<number[]>([])
-  const [hymnInput, setHymnInput] = useState('')
-  const [selectedGroupsOrStudents, setSelectedGroupsOrStudents] = useState<
-    string[]
-  >([])
+  const [selectedRecipient, setSelectedRecipient] = useState<string>('')
 
-  // Função para adicionar páginas
+  // Carrega usuários para o Select
+  useEffect(() => {
+    if (token && users.length === 0) {
+      fetchUsers(token)
+    }
+  }, [token, users.length, fetchUsers])
+
   const handleAddPage = () => {
-    const pageNumber = parseInt(pageInput, 10)
-    if (!isNaN(pageNumber) && !selectedPages.includes(pageNumber)) {
-      setSelectedPages([...selectedPages, pageNumber])
+    const num = parseInt(pageInput)
+    if (num && !selectedPages.includes(num)) {
+      setSelectedPages([...selectedPages, num].sort((a, b) => a - b))
       setPageInput('')
     }
   }
 
-  // Função para remover páginas
-  const handleRemovePage = (pageNumber: number) => {
-    setSelectedPages(selectedPages.filter((page) => page !== pageNumber))
-  }
-
-  // Função para adicionar lições
   const handleAddLesson = () => {
-    const lessonNumber = parseInt(lessonInput, 10)
-    if (!isNaN(lessonNumber) && !selectedLessons.includes(lessonNumber)) {
-      setSelectedLessons([...selectedLessons, lessonNumber])
+    const num = parseInt(lessonInput)
+    if (num && !selectedLessons.includes(num)) {
+      setSelectedLessons([...selectedLessons, num].sort((a, b) => a - b))
       setLessonInput('')
     }
   }
 
-  // Função para remover lições
-  const handleRemoveLesson = (lessonNumber: number) => {
-    setSelectedLessons(
-      selectedLessons.filter((lesson) => lesson !== lessonNumber),
-    )
-  }
-
-  // Função para adicionar hinos
   const handleAddHymn = () => {
-    const hymnNumber = parseInt(hymnInput, 10)
-    if (
-      !isNaN(hymnNumber) &&
-      hymnNumber >= 1 &&
-      hymnNumber <= 480 &&
-      !selectedHymns.includes(hymnNumber)
-    ) {
-      setSelectedHymns([...selectedHymns, hymnNumber])
+    const num = parseInt(hymnInput)
+    if (num >= 1 && num <= 480 && !selectedHymns.includes(num)) {
+      setSelectedHymns([...selectedHymns, num].sort((a, b) => a - b))
       setHymnInput('')
     }
   }
 
-  // Função para remover hinos
-  const handleRemoveHymn = (hymnNumber: number) => {
-    setSelectedHymns(selectedHymns.filter((hymn) => hymn !== hymnNumber))
-  }
+  const handleSave = async () => {
+    if (!selectedCategory || !description || !selectedRecipient) {
+      alert("Selecione a categoria, descrição e para quem é a tarefa.")
+      return
+    }
 
-  // Função para adicionar grupos ou alunos selecionados
-  const handleAddGroupOrStudent = (value: string) => {
-    if (value === 'todos') {
-      setSelectedGroupsOrStudents(['todos'])
-    } else if (!selectedGroupsOrStudents.includes(value)) {
-      setSelectedGroupsOrStudents([...selectedGroupsOrStudents, value])
+    setIsLoading(true)
+
+    // Monta o título dinâmico para facilitar a visualização no card
+    let dynamicTitle = description
+    if (selectedPages.length > 0) dynamicTitle += ` (Pág: ${selectedPages.join(', ')})`
+    if (selectedLessons.length > 0) dynamicTitle += ` (Lição: ${selectedLessons.join(', ')})`
+    if (selectedHymns.length > 0) dynamicTitle += ` (Hinos: ${selectedHymns.join(', ')})`
+
+    const isGroup = selectedRecipient.startsWith('GROUP_')
+    
+    const payload = {
+      title: dynamicTitle,
+      description,
+      observation,
+      category: selectedCategory as TaskCategory,
+      group: isGroup ? selectedRecipient as Group : undefined,
+      studentId: !isGroup ? selectedRecipient : undefined
+    }
+
+    const success = await createTask(payload, token!)
+    setIsLoading(false)
+
+    if (success) {
+      // Força um reload ou você pode controlar o estado do Dialog no componente pai
+      window.location.reload()
     }
   }
 
-  // Função para remover grupos ou alunos selecionados
-  const handleRemoveGroupOrStudent = (value: string) => {
-    setSelectedGroupsOrStudents(
-      selectedGroupsOrStudents.filter((item) => item !== value),
-    )
-  }
-
   return (
-    <DialogContent>
-      <section className="grid gap-4">
-        <DialogHeader>
-          <DialogTitle>Criar uma Tarefa</DialogTitle>
-        </DialogHeader>
+    <DialogContent className="sm:max-w-[450px] max-h-[90vh] overflow-y-auto">
+      <DialogHeader>
+        <DialogTitle className="text-2xl font-bold">Nova Tarefa</DialogTitle>
+      </DialogHeader>
 
-        <Select onValueChange={(value) => setSelectedCategory(value)}>
-          <SelectTrigger className="h-12 w-full">
-            <SelectValue placeholder="Selecione uma categoria" />
-          </SelectTrigger>
+      <div className="grid gap-4 py-4">
+        {/* Categoria */}
+        <Select onValueChange={(v) => setSelectedCategory(v as TaskCategory)}>
+          <SelectTrigger className="h-12"><SelectValue placeholder="Selecione a Categoria" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="MSA">MSA</SelectItem>
-            <SelectItem value="Método">Método</SelectItem>
-            <SelectItem value="Hino">Hino</SelectItem>
+            <SelectItem value="METODO">Método</SelectItem>
+            <SelectItem value="HINOS">Hino</SelectItem>
           </SelectContent>
         </Select>
 
-        {selectedCategory === 'MSA' && (
-          <>
+        {/* Inputs Dinâmicos */}
+        {(selectedCategory === 'MSA' || selectedCategory === 'METODO') && (
+          <div className="grid gap-3 p-3 border rounded-md bg-muted/30">
             <div className="flex gap-2">
-              <Input
-                className="h-12"
-                type="number"
-                placeholder="Página"
-                value={pageInput}
-                onChange={(e) => setPageInput(e.target.value)}
-              />
-              <Button type="button" className="h-12" onClick={handleAddPage}>
-                Adicionar
-              </Button>
+              <Input type="number" placeholder="Página" value={pageInput} onChange={(e) => setPageInput(e.target.value)} />
+              <Button type="button" variant="secondary" onClick={handleAddPage}>Add</Button>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {selectedPages.map((page) => (
-                <Badge key={page} className="relative pr-8">
-                  Página {page}
-                  <button
-                    onClick={() => handleRemovePage(page)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </Badge>
+            <div className="flex flex-wrap gap-1">
+              {selectedPages.map(p => (
+                <Badge key={p} className="pl-2 pr-1 py-1">Pg {p} <X className="ml-1 h-3 w-3 cursor-pointer" onClick={() => setSelectedPages(selectedPages.filter(x => x !== p))} /></Badge>
               ))}
             </div>
-
             <div className="flex gap-2">
-              <Input
-                className="h-12"
-                type="number"
-                placeholder="Lições"
-                value={lessonInput}
-                onChange={(e) => setLessonInput(e.target.value)}
-              />
-              <Button type="button" className="h-12" onClick={handleAddLesson}>
-                Adicionar
-              </Button>
+              <Input type="number" placeholder="Lição" value={lessonInput} onChange={(e) => setLessonInput(e.target.value)} />
+              <Button type="button" variant="secondary" onClick={handleAddLesson}>Add</Button>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {selectedLessons.map((lesson) => (
-                <Badge key={lesson} className="relative pr-8">
-                  Lição {lesson}
-                  <button
-                    onClick={() => handleRemoveLesson(lesson)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </Badge>
+            <div className="flex flex-wrap gap-1">
+              {selectedLessons.map(l => (
+                <Badge key={l} className="pl-2 pr-1 py-1">L {l} <X className="ml-1 h-3 w-3 cursor-pointer" onClick={() => setSelectedLessons(selectedLessons.filter(x => x !== l))} /></Badge>
               ))}
             </div>
-          </>
+          </div>
         )}
 
-        {selectedCategory === 'Método' && (
-          <>
+        {selectedCategory === 'HINOS' && (
+          <div className="grid gap-3 p-3 border rounded-md bg-muted/30">
             <div className="flex gap-2">
-              <Input
-                className="h-12"
-                type="number"
-                placeholder="Página"
-                value={pageInput}
-                onChange={(e) => setPageInput(e.target.value)}
-              />
-              <Button type="button" className="h-12" onClick={handleAddPage}>
-                Adicionar
-              </Button>
+              <Input type="number" placeholder="Hino (1-480)" value={hymnInput} onChange={(e) => setHymnInput(e.target.value)} />
+              <Button type="button" variant="secondary" onClick={handleAddHymn}>Add</Button>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {selectedPages.map((page) => (
-                <Badge key={page} className="relative pr-8">
-                  Página {page}
-                  <button
-                    onClick={() => handleRemovePage(page)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </Badge>
+            <div className="flex flex-wrap gap-1">
+              {selectedHymns.map(h => (
+                <Badge key={h} className="pl-2 pr-1 py-1">Hino {h} <X className="ml-1 h-3 w-3 cursor-pointer" onClick={() => setSelectedHymns(selectedHymns.filter(x => x !== h))} /></Badge>
               ))}
             </div>
-
-            <div className="flex gap-2">
-              <Input
-                className="h-12"
-                type="number"
-                placeholder="Lições"
-                value={lessonInput}
-                onChange={(e) => setLessonInput(e.target.value)}
-              />
-              <Button type="button" className="h-12" onClick={handleAddLesson}>
-                Adicionar
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {selectedLessons.map((lesson) => (
-                <Badge key={lesson} className="relative pr-8">
-                  Lição {lesson}
-                  <button
-                    onClick={() => handleRemoveLesson(lesson)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </Badge>
-              ))}
-            </div>
-          </>
+          </div>
         )}
 
-        {selectedCategory === 'Hino' && (
-          <>
-            <div className="flex gap-2">
-              <Input
-                className="h-12"
-                type="number"
-                placeholder="Número do Hino (1-480)"
-                value={hymnInput}
-                onChange={(e) => setHymnInput(e.target.value)}
-                min="1"
-                max="480"
-              />
-              <Button type="button" className="h-12" onClick={handleAddHymn}>
-                Adicionar
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {selectedHymns.map((hymn) => (
-                <Badge key={hymn} className="relative pr-8">
-                  Hino {hymn}
-                  <button
-                    onClick={() => handleRemoveHymn(hymn)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </Badge>
-              ))}
-            </div>
-          </>
-        )}
+        {/* Texto e Destinatário */}
+        <Input className="h-12" placeholder="O que deve ser feito?" value={description} onChange={(e) => setDescription(e.target.value)} />
+        <Input className="h-12" placeholder="Observações (opcional)" value={observation} onChange={(e) => setObservation(e.target.value)} />
 
-        <Input className="h-12" type="text" placeholder="Descrição" />
-
-        <Select onValueChange={handleAddGroupOrStudent}>
-          <SelectTrigger className="h-12 w-full">
-            <SelectValue placeholder="Grupo ou Aluno" />
-          </SelectTrigger>
+        <Select onValueChange={setSelectedRecipient}>
+          <SelectTrigger className="h-12"><SelectValue placeholder="Para quem é esta tarefa?" /></SelectTrigger>
           <SelectContent>
-            <SelectItem
-              value="todos"
-              disabled={selectedGroupsOrStudents.includes('todos')}
-            >
-              Todos
-            </SelectItem>
-            <SelectItem
-              value="grupo-1"
-              disabled={
-                selectedGroupsOrStudents.includes('todos') ||
-                selectedGroupsOrStudents.includes('grupo-1')
-              }
-            >
-              Grupo 01
-            </SelectItem>
-            <SelectItem
-              value="grupo-2"
-              disabled={
-                selectedGroupsOrStudents.includes('todos') ||
-                selectedGroupsOrStudents.includes('grupo-2')
-              }
-            >
-              Grupo 02
-            </SelectItem>
-            <SelectItem
-              value="grupo-3"
-              disabled={
-                selectedGroupsOrStudents.includes('todos') ||
-                selectedGroupsOrStudents.includes('grupo-3')
-              }
-            >
-              Grupo 03
-            </SelectItem>
-            <SelectItem
-              value="grupo-4"
-              disabled={
-                selectedGroupsOrStudents.includes('todos') ||
-                selectedGroupsOrStudents.includes('grupo-4')
-              }
-            >
-              Grupo 04
-            </SelectItem>
-            <SelectItem
-              value="1"
-              disabled={
-                selectedGroupsOrStudents.includes('todos') ||
-                selectedGroupsOrStudents.includes('1')
-              }
-            >
-              Antoni da Silva
-            </SelectItem>
-            <SelectItem
-              value="2"
-              disabled={
-                selectedGroupsOrStudents.includes('todos') ||
-                selectedGroupsOrStudents.includes('2')
-              }
-            >
-              Aberto Ferreira
-            </SelectItem>
-            <SelectItem
-              value="3"
-              disabled={
-                selectedGroupsOrStudents.includes('todos') ||
-                selectedGroupsOrStudents.includes('3')
-              }
-            >
-              João Pedro
-            </SelectItem>
-            <SelectItem
-              value="4"
-              disabled={
-                selectedGroupsOrStudents.includes('todos') ||
-                selectedGroupsOrStudents.includes('4')
-              }
-            >
-              João Silva
-            </SelectItem>
+            <SelectGroup>
+              <SelectLabel className="flex items-center gap-2"><Users className="h-4 w-4"/> Grupos</SelectLabel>
+              <SelectItem value="GROUP_01">Grupo 01</SelectItem>
+              <SelectItem value="GROUP_02">Grupo 02</SelectItem>
+              <SelectItem value="GROUP_03">Grupo 03</SelectItem>
+              <SelectItem value="GROUP_04">Grupo 04</SelectItem>
+            </SelectGroup>
+            <SelectSeparator />
+            <SelectGroup>
+              <SelectLabel className="flex items-center gap-2"><UserIcon className="h-4 w-4"/> Alunos</SelectLabel>
+              {users.filter(u => u.role === 'STUDENT').map(u => (
+                <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
+              ))}
+            </SelectGroup>
           </SelectContent>
         </Select>
 
-        <div className="flex flex-wrap gap-2">
-          {selectedGroupsOrStudents.map((item) => (
-            <Badge key={item} className="relative pr-8">
-              {item === 'todos'
-                ? 'Todos'
-                : item.startsWith('grupo-')
-                  ? `Grupo ${item.split('-')[1]}`
-                  : item === '1'
-                    ? 'Antoni da Silva'
-                    : item === '2'
-                      ? 'Aberto Ferreira'
-                      : item === '3'
-                        ? 'João Pedro'
-                        : 'João Silva'}
-              <button
-                onClick={() => handleRemoveGroupOrStudent(item)}
-                className="absolute right-2 top-1/2 -translate-y-1/2"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </Badge>
-          ))}
-        </div>
-      </section>
-
-      <Button className="mt-4 h-12 w-full">
-        <NavLink to="/perfil-edit">Salvar</NavLink>
-      </Button>
+        <Button className="h-14 w-full text-lg font-bold shadow-lg" onClick={handleSave} disabled={isLoading}>
+          {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : 'Criar Tarefa'}
+        </Button>
+      </div>
     </DialogContent>
   )
 }
