@@ -1,8 +1,6 @@
-import { AxiosError } from 'axios'
 import { create } from 'zustand'
 import { api } from '@/lib/api'
 
-// Tipagens baseadas no seu Prisma Schema
 export type TaskStatus = 'PENDING' | 'COMPLETED'
 export type TaskCategory = 'MSA' | 'METODO' | 'HINOS'
 export type Group = 'GROUP_01' | 'GROUP_02' | 'GROUP_03' | 'GROUP_04'
@@ -45,7 +43,7 @@ interface TaskStore {
   deleteTask: (id: string, token: string) => Promise<boolean>
 }
 
-export const useTaskStore = create<TaskStore>((set, get) => ({
+export const useTaskStore = create<TaskStore>((set) => ({
   tasks: [],
   isLoading: false,
 
