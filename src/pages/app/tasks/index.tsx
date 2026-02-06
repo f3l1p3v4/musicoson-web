@@ -60,6 +60,19 @@ export function Tasks() {
     return { cleanTitle, pages, lessons, hymns }
   }
 
+  const formatArrayIntoString = (arr: string[]): string => {
+    if (arr.length === 0) {
+      return ''
+    }
+    if (arr.length === 1) {
+      return arr[0]
+    }
+    if (arr.length === 2) {
+      return `${arr[0]} e ${arr[1]}`
+    }
+    return `${arr.slice(0, -1).join(', ')} e ${arr[arr.length - 1]}`
+  }
+
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
       const taskYear = getYear(new Date(task.createdAt)).toString()
@@ -72,7 +85,7 @@ export function Tasks() {
 
   return (
     <>
-      <section className="grid gap-4 p-4">
+      <section className="grid gap-4 ">
         <h1 className="mb-2 text-left text-3xl font-bold">Tarefas</h1>
         
         <div className="flex flex-col gap-3">
@@ -105,7 +118,6 @@ export function Tasks() {
             )}
 
             {filteredTasks.map((task) => {
-              // Executa o parser para cada task
               const { cleanTitle, pages, lessons, hymns } = parseTaskTitle(task.title)
 
               return (
@@ -124,21 +136,21 @@ export function Tasks() {
 
                         {/* Badges Dinâmicos (Páginas, Lições e Hinos) */}
                         <div className="flex flex-wrap gap-1 mt-0.5">
-                          {pages.map((p, i) => (
-                            <Badge key={`p-${i}`} variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none text-[10px] h-5">
-                              Página {p}
+                          {pages.length > 0 && (
+                            <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none text-[10px] h-5">
+                              Página {formatArrayIntoString(pages)}
                             </Badge>
-                          ))}
-                          {lessons.map((l, i) => (
-                            <Badge key={`l-${i}`} variant="secondary" className="bg-purple-100 text-purple-700 hover:bg-purple-100 border-none text-[10px] h-5">
-                              Lição {l}
+                          )}
+                          {lessons.length > 0 && (
+                            <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none text-[10px] h-5">
+                              Lição {formatArrayIntoString(lessons)}
                             </Badge>
-                          ))}
-                          {hymns.map((h, i) => (
-                            <Badge key={`h-${i}`} variant="secondary" className="bg-amber-100 text-amber-700 hover:bg-amber-100 border-none text-[10px] h-5">
-                              Hino {h}
+                          )}
+                          {hymns.length > 0 && (
+                            <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none text-[10px] h-5">
+                              Hino {formatArrayIntoString(hymns)}
                             </Badge>
-                          ))}
+                          )}
                         </div>
 
                         {task.observation && (
