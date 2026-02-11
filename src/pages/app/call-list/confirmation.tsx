@@ -102,7 +102,6 @@ export function Confirmation({
           className={`h-12 w-full bg-red-500 hover:bg-red-600 text-white hover:text-white ${
             student.currentStatus === 'ABSENT' ? 'ring-2 ring-offset-2 ring-red-400' : ''
           }`}
-          variant="outline"
           onClick={() => handleAttendance('ABSENT')}
         >
           Ausente
