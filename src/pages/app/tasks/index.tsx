@@ -43,7 +43,7 @@ export function Tasks() {
   const parseTaskTitle = (title: string) => {
     const pageRegex = /(?:Pg|Pág)[:\s]+([\d,\s]+)/gi
     const lessonRegex = /(?:Lição|L)[:\s]+([\d,\s]+)/gi
-    const hymnRegex = /(?:Hino|H)[:\s]+([\d,\s]+)/gi
+    const hymnRegex = /(?:Hinos|H)[:\s]+([\d,\s]+)/gi
 
     const extract = (regex: RegExp) => {
       const matches = [...title.matchAll(regex)]

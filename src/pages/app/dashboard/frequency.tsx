@@ -1,11 +1,27 @@
+import { useEffect } from 'react'
 import { ChartNoAxesCombined } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuthStore } from '@/store/authStore'
+import { useAttendanceStore } from '@/store/callListStore' // Ajuste o path se necessário
 
 export function Frequency() {
-  const { id } = useAuthStore()
+  const { id, token } = useAuthStore()
+  const { students, fetchStudentsAttendance } = useAttendanceStore()
+
+  // Busca os dados de frequência se ainda não estiverem carregados
+  useEffect(() => {
+    if (token && (!students || students.length === 0)) {
+      fetchStudentsAttendance(token)
+    }
+  }, [token, students, fetchStudentsAttendance])
+
+  // Encontra o aluno atual na lista e calcula o total de faltas (ABSENT)
+  const studentData = students?.find(student => student.id === id)
+  const totalAbsences = studentData?.studentAttendance?.filter(
+    (attendance) => attendance.status === 'ABSENT'
+  ).length || 0
 
   return (
     <NavLink className="flex w-full" to={`/frequency/${id}`}>
@@ -20,7 +36,7 @@ export function Frequency() {
 
           <div className="space-y-0.5">
             <p className="text-xs text-muted-foreground">
-              Faltas
+              {totalAbsences} {totalAbsences === 1 ? 'falta' : 'faltas'}
             </p>
           </div>
         </CardContent>
