@@ -1,4 +1,4 @@
-import { FileBarChart, Loader2 } from 'lucide-react'
+import { FileBarChart } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
