@@ -115,7 +115,7 @@ export function TaskCreate() {
 
       <div className="grid gap-4 py-4">
         {/* Categoria */}
-        <Select onValueChange={(v) => setSelectedCategory(v as TaskCategory)}>
+        <Select onValueChange={(v: string) => setSelectedCategory(v as TaskCategory)}>
           <SelectTrigger className="h-12"><SelectValue placeholder="Selecione a Categoria" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="MSA">MSA</SelectItem>

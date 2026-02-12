@@ -1,0 +1,300 @@
+//@baseUrl = http://localhost:3333
+
+@baseUrl = https://api.felipevaldez.com.br
+
+@authToken = {{login.response.body.token.token}}
+
+
+# @name ListarUsuarios
+GET {{baseUrl}}/users
+Content-Type: application/json
+Authorization: Bearer {{authToken}} 
+
+###
+
+# @name Usuario
+GET {{baseUrl}}/users/76baabab-e286-47fd-9774-88ed3785cc19
+Content-Type: application/json
+Authorization: Bearer {{authToken}} 
+
+###
+
+# @name CadastroUsuario
+POST {{baseUrl}}/users/register
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Davi",
+  "instrument": "Violino",
+  "group": "GROUP_02",
+  "role": "STUDENT",
+  "email": "davi@teste.com",
+  "phone": "56151131322",
+  "password": "123456",
+  "pratical_level": "C_JOVEM"
+}
+
+###
+
+# @name login
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+{
+  "email": "felipe@teste.com",
+  "password": "123456"
+}
+
+###
+
+# @name AtualizarUsuario
+PUT {{baseUrl}}/users/12ec045f-1016-4fb2-b67d-77e07a9b9323
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "teste",
+  "instrument": "teste",
+  "group": "GROUP_01",
+  "role": "STUDENT",
+  "email": "teste@teste.com",
+  "phone": "123456766",
+  "pratical_level": "C_JOVEM",
+}
+
+###
+
+# @name RemoverUsuario
+DELETE {{baseUrl}}/users/8cfb959d-8cc4-4cf9-8090-af8e3eb8d1dd
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name ListarTarefas
+
+GET {{baseUrl}}/tasks
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name CriarTarefa
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "title": "Estudar teoria teste",
+  "description": "Revisar teoria musical básica",
+  "category": "MSA",
+  "observation": "Focar em escalas maiores",
+  "delivery_date": "2024-08-15",
+  "studentId": "e1f5f41e-c2d7-436c-a9f1-858555cde4f2"
+}
+
+###
+
+# @name AtualizarStatusTarefa
+PUT {{baseUrl}}/tasks/22c0b46d-6881-4e49-b45c-ef42d75f7f12/status
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "status": "COMPLETED"
+}
+
+###
+
+# @name ListarTarefasPorInstrutor
+GET {{baseUrl}}/tasks/instructor?instructorId=56398f61-7d35-4339-bead-28abc3fae9cc
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name ListarTarefasPorAluno
+GET {{baseUrl}}/tasks/student?studentId=e1f5f41e-c2d7-436c-a9f1-858555cde4f2
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+###
+
+# @name RemoverTarefas
+DELETE {{baseUrl}}/tasks/c6123143-ee02-4b37-8f4d-0b93b9d9be70
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name ListarAvisos
+GET {{baseUrl}}/notices
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name CriarAviso
+POST {{baseUrl}}/notices
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "title": "Novo aviso teste",
+  "description": "Reunião geral na próxima semana."
+}
+
+###
+
+# @name AtualizarAviso
+PUT {{baseUrl}}/notices/729717b4-ab3b-413f-b37e-6c81c8a94e48
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "title": "teste",
+  "description": "Atualização na descrição do aviso."
+}
+
+###
+
+# @name RemoverAviso
+DELETE {{baseUrl}}/notices/8568b592-3d70-4e17-a341-18333873c556
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name ListarProgramaMinimos
+GET {{baseUrl}}/program-minimum
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name CriarProgramaMinimos
+POST {{baseUrl}}/program-minimum
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "instrument": "Viola",
+  "meetings": [
+    { "name": "N. LAOUREX Vol. 1 até pág. 35" },
+    { "name": "CCB até pág. 46 (lição 113) + H. SITT Vol 1 até lição 6" },
+    { "name": "MÉTODO FACILITADO - Ed. Britten - até pág. 40" },
+    { "name": "Obs.: Hinos 431 a 480 soprano no natural" }
+  ],
+  "cults": [
+    { "name": "N. LAOUREX Vol. 1 até pág. 35" },
+    { "name": "CCB até pág. 46 (lição 113) + H. SITT Vol 1 até lição 6" },
+    { "name": "MÉTODO FACILITADO - Ed. Britten - até pág. 40" },
+    { "name": "Obs.: Hinos 431 a 480 soprano no natural" }
+  ],
+  "officialization": [
+    { "name": "N. LAOUREX Vol. 1 até pág. 35" },
+    { "name": "CCB até pág. 46 (lição 113) + H. SITT Vol 1 até lição 6" },
+    { "name": "MÉTODO FACILITADO - Ed. Britten - até pág. 40" },
+    { "name": "Obs.: Hinos 431 a 480 soprano no natural" }
+  ]
+}
+
+###
+
+# @name ListarHistorico
+GET {{baseUrl}}/attendance
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name ListarChamada
+GET {{baseUrl}}/attendance/students
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name ListarChamadaPorPeriodo
+GET {{baseUrl}}/attendance/students?startDate=2025-01-01T00:00:00.000Z&endDate=2025-06-30T23:59:59.999Z
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name ListarHistoricoDasAulasPorAluno
+GET {{baseUrl}}/attendance/student/76baabab-e286-47fd-9774-88ed3785cc19
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name CriarChamada
+POST {{baseUrl}}/attendance
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "date": "2025-03-02T00:00:00.150Z",
+  "studentId": "f36ff46a-666b-4e8e-8eef-cfb1658c169e",
+  "instructorId": "381ba0d2-f1e4-40de-a386-911523b53562",
+  "status": "ABSENT"
+}
+
+###
+
+# @name AtualizarChamada
+PUT {{baseUrl}}/attendance/860dd6a2-afa6-40e4-9f03-8959bf34a9b4
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "status": "EXCUSED"
+}
+
+###
+
+# @name RemoverChamada
+DELETE {{baseUrl}}/attendance/860dd6a2-afa6-40e4-9f03-8959bf34a9b4
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name ListarPlanoDeAulas
+GET {{baseUrl}}/class-plan
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name CriarPlanoDeAulas
+POST {{baseUrl}}/class-plan
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "group": "GROUP_02",
+  "date": "2026-02-07T19:00:11.000Z",
+  "subject": "Teoria Musical",
+  "page": "1",
+  "exercise": "Exercício 1",
+  "classNumber": 1,
+  "semester": "S1",
+  "ano": 2026,
+  "method": "teórica"
+}
+
+###
+
+# @name AtualizarPlanoDeAulas
+PUT {{baseUrl}}/class-plan/860dd6a2-afa6-40e4-9f03-8959bf34a9b4
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "group": "GROUP_01",
+  "date": "2025-02-10T19:00:11.000Z",
+  "subject": "Teoria Musical",
+  "page": "12",
+  "exercise": "Exercício 3"
+}

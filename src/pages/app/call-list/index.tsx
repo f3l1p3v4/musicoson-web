@@ -10,7 +10,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useAttendanceStore } from '@/store/callListStore'
 
 import { Confirmation } from './confirmation'
-//import { ExportDialog } from './export-dialog'
+import { ExportDialog } from './export-dialog'
 
 export function CallList() {
   const {
@@ -247,7 +247,7 @@ export function CallList() {
           </Dialog>
         )
       })}
-      {/*<ExportDialog token={token || ''} />*/}
+      <ExportDialog token={token || ''} />
     </section>
   )
 }

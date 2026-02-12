@@ -1,7 +1,6 @@
-import { Download, Loader2 } from 'lucide-react'
+import { FileBarChart, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { clsx } from 'clsx'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -54,23 +53,16 @@ export function ExportDialog({ token }: ExportDialogProps) {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
-          size="lg"
-          className={clsx(
-            "fixed bottom-6 right-6 z-50 rounded-full shadow-lg transition-all active:scale-95",
-            isLoading ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-primary text-white"
-          )}
+          className="fixed bottom-14 right-6 z-50 bg-primary text-white shadow-lg hover:bg-primary hover:text-white"
+          size="icon"
           disabled={isLoading}
         >
-          {isLoading ? (
-            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-          ) : (
-            <Download className="mr-2 h-5 w-5" />
-          )}
-          {isLoading ? 'Gerando...' : 'Exportar Chamada'}
+          <FileBarChart className="h-8 w-8" />
+          <span className="sr-only">Exportar Chamada</span>
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-[90%] rounded-2xl sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Exportar para Excel (.xlsx)</DialogTitle>
         </DialogHeader>
@@ -109,15 +101,16 @@ export function ExportDialog({ token }: ExportDialogProps) {
             variant="outline" 
             onClick={() => setIsOpen(false)} 
             disabled={isLoading}
+            className="rounded-xl"
           >
             Cancelar
           </Button>
           <Button 
             onClick={handleExport} 
             disabled={isLoading} 
-            className={clsx("min-w-[120px]", isLoading && "opacity-50")}
+            className="min-w-[120px] rounded-xl"
           >
-            {isLoading ? 'Processando...' : 'Baixar Excel'}
+            {isLoading ? 'Gerando...' : 'Baixar Excel'}
           </Button>
         </div>
       </DialogContent>

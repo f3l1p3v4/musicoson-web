@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import * as XLSX from 'xlsx'
+import * as XLSXStyle from 'xlsx-js-style';
 
 import { api } from '@/lib/api'
 
@@ -152,19 +153,9 @@ export const useAttendanceStore = create<AttendanceStore>()(
 
       exportAttendance: async ({ year, period, token }) => {
         try {
-          const startMonth = period === '1' ? 0 : 6;
-          const endMonth = period === '1' ? 5 : 11;
-          const endDay = period === '1' ? 30 : 31;
-
-          const startDate = new Date(parseInt(year), startMonth, 1);
-          const endDate = new Date(parseInt(year), endMonth, endDay, 23, 59, 59);
-
           const response = await api.get('/attendance/students', {
             headers: { Authorization: `Bearer ${token}` },
-            params: {
-              startDate: startDate.toISOString(),
-              endDate: endDate.toISOString(),
-            },
+            params: { year, period },
           });
 
           const studentsData: Student[] = response.data;
@@ -191,7 +182,7 @@ export const useAttendanceStore = create<AttendanceStore>()(
             const row: any = {
               'Nome do Aluno': student.name,
               'Instrumento': student.instrument,
-              'Grupo': student.group,
+              'Grupo': student.group ? student.group.slice(-2) : '-',
             };
 
             sortedDates.forEach(dateStr => {
@@ -217,21 +208,60 @@ export const useAttendanceStore = create<AttendanceStore>()(
 
           const worksheet = XLSX.utils.json_to_sheet(formattedData);
 
-          // AJUSTE DE LARGURA: Define larguras específicas para as colunas
+          const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
+          
+          for (let R = range.s.r; R <= range.e.r; ++R) {
+            for (let C = range.s.c; C <= range.e.c; ++C) {
+              const cell_address = { c: C, r: R };
+              const cell_ref = XLSX.utils.encode_cell(cell_address);
+              const cell = worksheet[cell_ref];
+
+              if (!cell) continue;
+              
+              const alignment = (C === 0 || C === 1) 
+                ? { horizontal: "left", vertical: "center" }
+                : { horizontal: "center", vertical: "center" };
+
+              cell.s = { alignment };
+
+              if (R === 0) {
+                cell.s = { 
+                    ...cell.s,
+                    font: { bold: true },
+                    fill: { fgColor: { rgb: "EFEFEF" } } 
+                };
+              }
+
+              if (cell.v === 'F') {
+                cell.s = {
+                  ...cell.s,
+                  font: { color: { rgb: "FF0000" }, bold: true },
+                };
+              }
+              
+              if (cell.v === 'P') {
+                cell.s = {
+                  ...cell.s,
+                  font: { color: { rgb: "008000" } }, 
+                };
+              }
+            }
+          }
+
           const wscols = [
-            { wch: 35 }, // Nome do Aluno
-            { wch: 20 }, // Instrumento
-            { wch: 15 }, // Grupo
-            ...sortedDates.map(() => ({ wch: 8 })), // Colunas de Datas (P/F)
-            { wch: 10 }, // Total P
-            { wch: 10 }, // Total F
+            { wch: 25 }, 
+            { wch: 12 }, 
+            { wch: 8 }, 
+            ...sortedDates.map(() => ({ wch: 8 })), 
+            { wch: 6 }, 
+            { wch: 6 }, 
           ];
           worksheet['!cols'] = wscols;
 
           const workbook = XLSX.utils.book_new();
           XLSX.utils.book_append_sheet(workbook, worksheet, 'Chamada');
 
-          XLSX.writeFile(workbook, `chamada_periodo_${period}_${year}.xlsx`);
+          XLSXStyle.writeFile(workbook, `chamada_periodo_${period}_${year}.xlsx`);
 
         } catch (error) {
           console.error('Erro ao exportar Excel:', error);
