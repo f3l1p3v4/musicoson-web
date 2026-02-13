@@ -1,35 +1,42 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
-import { PlusIcon, Loader2 } from 'lucide-react'
 import { format, getYear } from 'date-fns'
-
-import { useTaskStore } from '@/store/taskStore'
-import { useAuthStore } from '@/store/authStore' 
+import { Loader2, PlusIcon } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select'
+import { useAuthStore } from '@/store/authStore'
+import { useTaskStore } from '@/store/taskStore'
+import { userStore } from '@/store/userStore'
 
 import { TaskCreate } from './task-create'
 import { StatusTask } from './task-status'
 
-export function Tasks() {
-  const { tasks, fetchTasksByInstructor, fetchTasksByStudent, isLoading } = useTaskStore()
-  const { token, role, id } = useAuthStore()
+type Status = 'ALL' | 'PENDING' | 'COMPLETED'
 
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'PENDING' | 'COMPLETED'>('ALL')
+export function Tasks() {
+  const { tasks, fetchTasksByInstructor, fetchTasksByStudent, isLoading } =
+    useTaskStore()
+  const { token, role, id } = useAuthStore()
+  const { users, fetchUsers } = userStore()
+
+  const [statusFilter, setStatusFilter] = useState<Status>('ALL')
   const currentYear = new Date().getFullYear().toString()
 
   useEffect(() => {
+    if (token) {
+      fetchUsers(token)
+    }
     if (token && role && id) {
       if (role === 'INSTRUCTOR') {
         fetchTasksByInstructor(token, id)
@@ -37,7 +44,17 @@ export function Tasks() {
         fetchTasksByStudent(token, id)
       }
     }
-  }, [token, role, id, fetchTasksByInstructor, fetchTasksByStudent])
+  }, [token, role, id, fetchTasksByInstructor, fetchTasksByStudent, fetchUsers])
+
+  const userMap = useMemo(() => {
+    return users.reduce(
+      (acc, user) => {
+        acc[user.id] = user.name
+        return acc
+      },
+      {} as Record<string, string>,
+    )
+  }, [users])
 
   // --- NOVA FUNÇÃO DE PARSER ---
   const parseTaskTitle = (title: string) => {
@@ -47,14 +64,15 @@ export function Tasks() {
 
     const extract = (regex: RegExp) => {
       const matches = [...title.matchAll(regex)]
-      return matches.flatMap(m => m[1].split(',').map(n => n.trim())).filter(n => n !== "")
+      return matches
+        .flatMap((m) => m[1].split(',').map((n) => n.trim()))
+        .filter((n) => n !== '')
     }
 
     const pages = extract(pageRegex)
     const lessons = extract(lessonRegex)
     const hymns = extract(hymnRegex)
 
-    // Pega apenas o texto antes dos separadores | ou (
     const cleanTitle = title.split(/[|(|]/)[0].trim()
 
     return { cleanTitle, pages, lessons, hymns }
@@ -76,7 +94,8 @@ export function Tasks() {
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
       const taskYear = getYear(new Date(task.createdAt)).toString()
-      const matchesStatus = statusFilter === 'ALL' || task.status === statusFilter
+      const matchesStatus =
+        statusFilter === 'ALL' || task.status === statusFilter
       const matchesYear = taskYear === currentYear
 
       return matchesStatus && matchesYear
@@ -87,11 +106,16 @@ export function Tasks() {
     <>
       <section className="grid gap-4 ">
         <h1 className="mb-2 text-left text-3xl font-bold">Tarefas</h1>
-        
+
         <div className="flex flex-col gap-3">
-          <label className="text-[10px] font-semibold uppercase text-muted-foreground">Filtrar Status</label>
+          <label className="text-[10px] font-semibold uppercase text-muted-foreground">
+            Filtrar Status
+          </label>
           <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap md:items-center">
-            <Select value={statusFilter} onValueChange={(v: any) => setStatusFilter(v)}>
+            <Select
+              value={statusFilter}
+              onValueChange={(v: Status) => setStatusFilter(v)}
+            >
               <SelectTrigger className="h-8 w-full md:w-[150px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -105,20 +129,26 @@ export function Tasks() {
         </div>
 
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center p-20 gap-2">
+          <div className="flex flex-col items-center justify-center gap-2 p-20">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">Carregando tarefas...</p>
+            <p className="text-sm text-muted-foreground">
+              Carregando tarefas...
+            </p>
           </div>
         ) : (
           <div className="grid gap-3">
             {filteredTasks.length === 0 && (
-              <div className="text-center py-20 border-2 border-dashed rounded-2xl">
-                <p className="text-muted-foreground">Nenhuma tarefa encontrada para os filtros selecionados.</p>
+              <div className="rounded-2xl border-2 border-dashed py-20 text-center">
+                <p className="text-muted-foreground">
+                  Nenhuma tarefa encontrada para os filtros selecionados.
+                </p>
               </div>
             )}
 
             {filteredTasks.map((task) => {
-              const { cleanTitle, pages, lessons, hymns } = parseTaskTitle(task.title)
+              const { cleanTitle, pages, lessons, hymns } = parseTaskTitle(
+                task.title,
+              )
 
               return (
                 <Dialog key={task.id}>
@@ -128,57 +158,109 @@ export function Tasks() {
                         <CardTitle className="text-sm font-black uppercase tracking-tighter text-primary">
                           {task.category}
                         </CardTitle>
-                        {task.group && <Badge variant="outline" className="text-[9px] font-bold">{task.group}</Badge>}
+                        {role === 'INSTRUCTOR' && (
+                          <>
+                            {task.group ? (
+                              <Badge
+                                variant="outline"
+                                className="text-[9px] font-bold"
+                              >
+                                {task.group}
+                              </Badge>
+                            ) : (
+                              task.studentId && (
+                                <Badge
+                                  variant="outline"
+                                  className="text-[9px] font-bold"
+                                >
+                                  {userMap[task.studentId] || '...'}
+                                </Badge>
+                              )
+                            )}
+                          </>
+                        )}
+                        {role === 'STUDENT' && (
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] font-bold"
+                          >
+                            {userMap[task.instructorId] || '...'}
+                          </Badge>
+                        )}
                       </CardHeader>
                       <CardContent className="grid gap-2">
                         {/* Exibe o Título Limpo */}
                         <p className="text-sm font-semibold">{cleanTitle}</p>
 
                         {/* Badges Dinâmicos (Páginas, Lições e Hinos) */}
-                        <div className="flex flex-wrap gap-1 mt-0.5">
+                        <div className="mt-0.5 flex flex-wrap gap-1">
                           {pages.length > 0 && (
-                            <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none text-[10px] h-5">
+                            <Badge
+                              variant="secondary"
+                              className="h-5 border-none bg-blue-100 text-[10px] text-blue-700 hover:bg-blue-100"
+                            >
                               Página {formatArrayIntoString(pages)}
                             </Badge>
                           )}
                           {lessons.length > 0 && (
-                            <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none text-[10px] h-5">
+                            <Badge
+                              variant="secondary"
+                              className="h-5 border-none bg-blue-100 text-[10px] text-blue-700 hover:bg-blue-100"
+                            >
                               Lição {formatArrayIntoString(lessons)}
                             </Badge>
                           )}
                           {hymns.length > 0 && (
-                            <Badge variant="secondary" className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none text-[10px] h-5">
+                            <Badge
+                              variant="secondary"
+                              className="h-5 border-none bg-blue-100 text-[10px] text-blue-700 hover:bg-blue-100"
+                            >
                               Hino {formatArrayIntoString(hymns)}
                             </Badge>
                           )}
                         </div>
 
                         {task.observation && (
-                          <p className="text-xs text-muted-foreground line-clamp-1 italic">
-                            "{task.observation}"
+                          <p className="line-clamp-1 text-xs italic text-muted-foreground">
+                            &quot;{task.observation}&quot;
                           </p>
                         )}
-                        
-                        <div className="flex justify-between items-center mt-2 pt-2 border-t text-[10px] text-muted-foreground">
-                           <div className="flex gap-3">
-                              <span>Criado: {format(new Date(task.createdAt), 'dd/MM/yy')}</span>
-                              {task.delivery_date && (
-                                <span className="font-bold text-orange-600">
-                                  Entrega: {format(new Date(task.delivery_date), 'dd/MM/yy')}
-                                </span>
-                              )}
-                           </div>
-                            <Badge variant={task.status === 'COMPLETED' ? 'default' : 'destructive'} 
-                              className={task.status === 'COMPLETED' ? 'bg-green-500 hover:bg-green-600' : ''}>
-                              {task.status === 'COMPLETED' ? 'FEITO' : 'PENDENTE'}
-                            </Badge>
+
+                        <div className="mt-2 flex items-center justify-between border-t pt-2 text-[10px] text-muted-foreground">
+                          <div className="flex gap-3">
+                            <span>
+                              Criado:{' '}
+                              {format(new Date(task.createdAt), 'dd/MM/yy')}
+                            </span>
+                            {task.delivery_date && (
+                              <span className="font-bold text-orange-600">
+                                Entrega:{' '}
+                                {format(
+                                  new Date(task.delivery_date),
+                                  'dd/MM/yy',
+                                )}
+                              </span>
+                            )}
+                          </div>
+                          <Badge
+                            variant={
+                              task.status === 'COMPLETED'
+                                ? 'default'
+                                : 'destructive'
+                            }
+                            className={
+                              task.status === 'COMPLETED'
+                                ? 'bg-green-500 hover:bg-green-600'
+                                : ''
+                            }
+                          >
+                            {task.status === 'COMPLETED' ? 'FEITO' : 'PENDENTE'}
+                          </Badge>
                         </div>
                       </CardContent>
                     </Card>
                   </DialogTrigger>
-                  {role === 'INSTRUCTOR' && (
-                    <StatusTask task={task} />
-                  )}
+                  {role === 'INSTRUCTOR' && <StatusTask task={task} />}
                 </Dialog>
               )
             })}

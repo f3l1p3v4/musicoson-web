@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+
 import { isTokenExpired } from '@/utils/auth'
 
 interface AuthState {

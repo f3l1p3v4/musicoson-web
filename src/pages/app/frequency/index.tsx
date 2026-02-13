@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Dialog,
@@ -10,8 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Badge } from '@/components/ui/badge'
+} from '@/components/ui/dialog'
 import { useAuthStore } from '@/store/authStore'
 import { useStudentHistoryStore } from '@/store/studentHistoryStore'
 
@@ -31,9 +31,12 @@ export function Frequency() {
   // Função para definir a cor baseada no status
   const getStatusColor = (status?: string) => {
     switch (status) {
-      case 'PRESENT': return 'bg-green-500'
-      case 'ABSENT': return 'bg-red-500'
-      default: return 'bg-gray-400'
+      case 'PRESENT':
+        return 'bg-green-500'
+      case 'ABSENT':
+        return 'bg-red-500'
+      default:
+        return 'bg-gray-400'
     }
   }
 
@@ -41,11 +44,11 @@ export function Frequency() {
     <section className="flex flex-col">
       <button
         onClick={() => navigate(-1)}
-        className="mb-2 w-max rounded py-2 text-[14px] text-slate-600 hover:text-black transition-colors"
+        className="mb-2 w-max rounded py-2 text-[14px] text-slate-600 transition-colors hover:text-black"
       >
         ← Voltar
       </button>
-      
+
       <h1 className="mb-6 text-center text-xl font-bold xs:text-3xl">
         Frequência nas Aulas
       </h1>
@@ -56,7 +59,9 @@ export function Frequency() {
           studentHistory.map((item, index) => (
             <Dialog key={item.id}>
               <DialogTrigger asChild>
-                <Card className={`cursor-pointer border-none shadow-sm transition-transform active:scale-95 ${getStatusColor(item.attendance?.status)}`}>
+                <Card
+                  className={`cursor-pointer border-none shadow-sm transition-transform active:scale-95 ${getStatusColor(item.attendance?.status)}`}
+                >
                   <CardContent className="flex flex-col items-center justify-center p-3 text-white">
                     <span className="text-[10px] font-bold uppercase opacity-80">
                       Aula {String(index + 1).padStart(2, '0')}
@@ -75,11 +80,15 @@ export function Frequency() {
               {/* Popup com detalhes */}
               <DialogContent className="w-[90%] rounded-2xl sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle className="text-left border-b pb-2">Detalhes da Aula</DialogTitle>
+                  <DialogTitle className="border-b pb-2 text-left">
+                    Detalhes da Aula
+                  </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 pt-2">
                   <div>
-                    <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">Data</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                      Data
+                    </p>
                     <p className="text-sm font-semibold text-slate-700">
                       {new Date(item.date).toLocaleDateString('pt-BR', {
                         day: '2-digit',
@@ -91,32 +100,50 @@ export function Frequency() {
                   </div>
 
                   <div>
-                    <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">Assunto</p>
-                    <p className="text-sm text-slate-600 leading-relaxed">{item.subject}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                      Assunto
+                    </p>
+                    <p className="text-sm leading-relaxed text-slate-600">
+                      {item.subject}
+                    </p>
                   </div>
 
                   <div className="flex gap-10">
                     <div>
-                      <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">Página</p>
-                      <p className="text-sm text-slate-600">{item.page || '-'}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                        Página
+                      </p>
+                      <p className="text-sm text-slate-600">
+                        {item.page || '-'}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">Exercício</p>
-                      <p className="text-sm text-slate-600">{item.exercise || '-'}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                        Exercício
+                      </p>
+                      <p className="text-sm text-slate-600">
+                        {item.exercise || '-'}
+                      </p>
                     </div>
                   </div>
 
                   <div className="pt-2">
-                     <Badge className={`${getStatusColor(item.attendance?.status)} border-none text-white`}>
-                        {item.attendance?.status === 'PRESENT' ? 'Presente' : item.attendance?.status === 'ABSENT' ? 'Ausente' : 'Sem registro'}
-                     </Badge>
+                    <Badge
+                      className={`${getStatusColor(item.attendance?.status)} border-none text-white`}
+                    >
+                      {item.attendance?.status === 'PRESENT'
+                        ? 'Presente'
+                        : item.attendance?.status === 'ABSENT'
+                          ? 'Ausente'
+                          : 'Sem registro'}
+                    </Badge>
                   </div>
                 </div>
               </DialogContent>
             </Dialog>
           ))
         ) : (
-          <p className="col-span-3 text-center text-gray-500 py-10">
+          <p className="col-span-3 py-10 text-center text-gray-500">
             Nenhum histórico encontrado.
           </p>
         )}

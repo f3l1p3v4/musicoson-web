@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -17,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Label } from '@/components/ui/label'
 import { useAttendanceStore } from '@/store/callListStore'
 
 interface ExportDialogProps {
@@ -29,7 +29,7 @@ export function ExportDialog({ token }: ExportDialogProps) {
   const [year, setYear] = useState(new Date().getFullYear().toString())
   const [period, setPeriod] = useState('1')
   const [isLoading, setIsLoading] = useState(false)
-  
+
   const exportAttendance = useAttendanceStore((state) => state.exportAttendance)
 
   const currentYear = new Date().getFullYear()
@@ -61,12 +61,12 @@ export function ExportDialog({ token }: ExportDialogProps) {
           <span className="sr-only">Exportar Chamada</span>
         </Button>
       </DialogTrigger>
-      
+
       <DialogContent className="w-[90%] rounded-2xl sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Exportar para Excel (.xlsx)</DialogTitle>
         </DialogHeader>
-        
+
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="year">Ano Letivo</Label>
@@ -76,12 +76,14 @@ export function ExportDialog({ token }: ExportDialogProps) {
               </SelectTrigger>
               <SelectContent>
                 {years.map((y) => (
-                  <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+                  <SelectItem key={y} value={y.toString()}>
+                    {y}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-          
+
           <div className="grid gap-2">
             <Label htmlFor="period">Período Semestral</Label>
             <Select value={period} onValueChange={setPeriod}>
@@ -97,17 +99,17 @@ export function ExportDialog({ token }: ExportDialogProps) {
         </div>
 
         <div className="flex justify-end gap-3 border-t pt-4">
-          <Button 
-            variant="outline" 
-            onClick={() => setIsOpen(false)} 
+          <Button
+            variant="outline"
+            onClick={() => setIsOpen(false)}
             disabled={isLoading}
             className="rounded-xl"
           >
             Cancelar
           </Button>
-          <Button 
-            onClick={handleExport} 
-            disabled={isLoading} 
+          <Button
+            onClick={handleExport}
+            disabled={isLoading}
             className="min-w-[120px] rounded-xl"
           >
             {isLoading ? 'Gerando...' : 'Baixar Excel'}

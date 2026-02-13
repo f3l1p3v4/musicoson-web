@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { z } from 'zod'
-import { userStore } from '@/store/userStore'
+
 import { Button } from '@/components/ui/button'
 import {
   DialogContent,
@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { userStore } from '@/store/userStore'
 
 // Enums e labels
 export enum UserRole {
@@ -119,10 +120,23 @@ export function UserCreate({ token, onCreateSuccess }: UserCreateProps) {
           <DialogTitle>Criar novo usuário</DialogTitle>
         </DialogHeader>
 
-        <Input placeholder="Nome" name="name" value={form.name} onChange={handleChange} />
-        <Input placeholder="Instrumento" name="instrument" value={form.instrument} onChange={handleChange} />
+        <Input
+          placeholder="Nome"
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+        />
+        <Input
+          placeholder="Instrumento"
+          name="instrument"
+          value={form.instrument}
+          onChange={handleChange}
+        />
 
-        <Select value={form.group} onValueChange={(value) => setForm({ ...form, group: value as Group })}>
+        <Select
+          value={form.group}
+          onValueChange={(value) => setForm({ ...form, group: value as Group })}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Grupo" />
           </SelectTrigger>
@@ -135,7 +149,12 @@ export function UserCreate({ token, onCreateSuccess }: UserCreateProps) {
           </SelectContent>
         </Select>
 
-        <Select value={form.role} onValueChange={(value) => setForm({ ...form, role: value as UserRole })}>
+        <Select
+          value={form.role}
+          onValueChange={(value) =>
+            setForm({ ...form, role: value as UserRole })
+          }
+        >
           <SelectTrigger>
             <SelectValue placeholder="Função" />
           </SelectTrigger>
@@ -148,12 +167,25 @@ export function UserCreate({ token, onCreateSuccess }: UserCreateProps) {
           </SelectContent>
         </Select>
 
-        <Input placeholder="E-mail" name="email" type="email" value={form.email} onChange={handleChange} />
-        <Input placeholder="Celular (9 dígitos)" name="phone" value={form.phone} onChange={handleChange} />
+        <Input
+          placeholder="E-mail"
+          name="email"
+          type="email"
+          value={form.email}
+          onChange={handleChange}
+        />
+        <Input
+          placeholder="Celular (9 dígitos)"
+          name="phone"
+          value={form.phone}
+          onChange={handleChange}
+        />
 
         <Select
           value={form.practical_level}
-          onValueChange={(value) => setForm({ ...form, practical_level: value as PracticalLevel })}
+          onValueChange={(value) =>
+            setForm({ ...form, practical_level: value as PracticalLevel })
+          }
         >
           <SelectTrigger>
             <SelectValue placeholder="Nível Prático" />

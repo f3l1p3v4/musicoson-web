@@ -71,7 +71,7 @@ export function Dashboard() {
           {role === 'INSTRUCTOR' && <Call />}
           {role === 'INSTRUCTOR' && (
             <FrequencyStudent qtdStudents={students?.length ?? 0} />
-          )}  
+          )}
           {role === 'STUDENT' && <TaskStudent />}
           {role === 'STUDENT' && <Frequency />}
         </div>

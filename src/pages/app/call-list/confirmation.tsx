@@ -60,7 +60,7 @@ export function Confirmation({
       })
 
       if (response.success) {
-        toast.success("Presença atualizada com sucesso!")
+        toast.success('Presença atualizada com sucesso!')
         onSuccessClose()
       } else {
         toast.error(response.responseData.message)
@@ -93,14 +93,16 @@ export function Confirmation({
             day: '2-digit',
             month: '2-digit',
           })}
-          {student.attendanceId && " (Editar Registro)"}
+          {student.attendanceId && ' (Editar Registro)'}
         </DialogDescription>
       </DialogHeader>
 
       <div className="flex justify-between gap-2">
         <Button
-          className={`h-12 w-full bg-red-500 hover:bg-red-600 text-white hover:text-white ${
-            student.currentStatus === 'ABSENT' ? 'ring-2 ring-offset-2 ring-red-400' : ''
+          className={`h-12 w-full bg-red-500 text-white hover:bg-red-600 hover:text-white ${
+            student.currentStatus === 'ABSENT'
+              ? 'ring-2 ring-red-400 ring-offset-2'
+              : ''
           }`}
           onClick={() => handleAttendance('ABSENT')}
         >
@@ -108,7 +110,9 @@ export function Confirmation({
         </Button>
         <Button
           className={`h-12 w-full bg-green-500 hover:bg-green-600 ${
-            student.currentStatus === 'PRESENT' ? 'ring-2 ring-offset-2 ring-green-400' : ''
+            student.currentStatus === 'PRESENT'
+              ? 'ring-2 ring-green-400 ring-offset-2'
+              : ''
           }`}
           onClick={() => handleAttendance('PRESENT')}
         >

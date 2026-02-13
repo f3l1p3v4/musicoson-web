@@ -1,18 +1,26 @@
 import {
+  BookOpenText,
+  FileText,
+  LogOut,
+  MenuIcon,
+  User2Icon,
+  Users2,
+} from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+
+import { Button } from '@/components/ui/button'
+import { useAuthStore } from '@/store/authStore'
+
+import { NavLink } from './nav-link'
+import { Separator } from './ui/separator'
+import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  SheetClose,
 } from './ui/sheet'
-import { Separator } from './ui/separator'
-import { Button } from '@/components/ui/button'
-
-import { MenuIcon, LogOut, BookOpenText, FileText, Users2, User2Icon } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import { useAuthStore } from '@/store/authStore'
-import { NavLink } from './nav-link'
 // import { ThemeToggle } from './theme/theme-toggle'
 
 export function AccountMenu() {
@@ -26,20 +34,23 @@ export function AccountMenu() {
 
   const nameParts = userName?.split(' ') || []
   const formattedName =
-  nameParts.length > 1
-    ? `${capitalize(nameParts[0])} ${capitalize(nameParts[1])}`
-    : capitalize(nameParts[0]) || 'Usuário'
+    nameParts.length > 1
+      ? `${capitalize(nameParts[0])} ${capitalize(nameParts[1])}`
+      : capitalize(nameParts[0]) || 'Usuário'
 
-    function capitalize(str?: string) {
-      if (!str) return ''
-      return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
-    }
+  function capitalize(str?: string) {
+    if (!str) return ''
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+  }
 
-    const roleLabel = (() => {
-    if (role === 'INSTRUCTOR' && formattedName.toLowerCase().startsWith('carlos')) {
+  const roleLabel = (() => {
+    if (
+      role === 'INSTRUCTOR' &&
+      formattedName.toLowerCase().startsWith('carlos')
+    ) {
       return 'Encarregado'
     }
-    
+
     if (role === 'INSTRUCTOR') {
       return 'Instrutor'
     }
@@ -54,16 +65,19 @@ export function AccountMenu() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <button className="flex flex-col items-center text-muted-foreground text-sm">
-          <MenuIcon className="h-5 w-5 mb-1" />
+        <button className="flex flex-col items-center text-sm text-muted-foreground">
+          <MenuIcon className="mb-1 h-5 w-5" />
         </button>
       </SheetTrigger>
 
-      <SheetContent side="right" className="w-72 pt-6 flex flex-col justify-between">
+      <SheetContent
+        side="right"
+        className="flex w-72 flex-col justify-between pt-6"
+      >
         <div>
           <SheetHeader className="my-8">
             <SheetTitle className="flex flex-col items-start text-left">
-              <span className="font-semibold text-sm text-primary">
+              <span className="text-sm font-semibold text-primary">
                 {formattedName}
               </span>
               <span className="text-xs font-normal text-muted-foreground">
@@ -76,7 +90,10 @@ export function AccountMenu() {
 
           <div className="space-y-3">
             <SheetClose asChild>
-              <NavLink to="/perfil" className="flex items-center gap-3 text-sm font-normal text-muted-foreground">
+              <NavLink
+                to="/perfil"
+                className="flex items-center gap-3 text-sm font-normal text-muted-foreground"
+              >
                 <User2Icon className="h-4 w-4" />
                 Perfil
               </NavLink>
@@ -84,7 +101,10 @@ export function AccountMenu() {
 
             {role === 'INSTRUCTOR' && (
               <SheetClose asChild>
-                <NavLink to="/users" className="flex items-center gap-3 text-sm font-normal text-muted-foreground">
+                <NavLink
+                  to="/users"
+                  className="flex items-center gap-3 text-sm font-normal text-muted-foreground"
+                >
                   <Users2 className="h-4 w-4" />
                   Usuários
                 </NavLink>
@@ -92,14 +112,20 @@ export function AccountMenu() {
             )}
 
             <SheetClose asChild>
-              <NavLink to="/program-minimum" className="flex items-center gap-3 text-sm font-normal text-muted-foreground">
+              <NavLink
+                to="/program-minimum"
+                className="flex items-center gap-3 text-sm font-normal text-muted-foreground"
+              >
                 <FileText className="h-4 w-4" />
                 Programa Mínimo
               </NavLink>
             </SheetClose>
 
             <SheetClose asChild>
-              <NavLink to="/class-plan" className="flex items-center gap-3 text-sm font-normal text-muted-foreground">
+              <NavLink
+                to="/class-plan"
+                className="flex items-center gap-3 text-sm font-normal text-muted-foreground"
+              >
                 <BookOpenText className="h-4 w-4" />
                 Plano de Aula
               </NavLink>
@@ -109,7 +135,7 @@ export function AccountMenu() {
           <Separator className="my-3" />
         </div>
 
-        <div className="px-2 space-y-3">
+        <div className="space-y-3 px-2">
           <Separator />
 
           {/* <div className="flex items-center justify-between">

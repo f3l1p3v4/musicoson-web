@@ -1,8 +1,8 @@
 import { Music4 } from 'lucide-react'
 
 import { NavLink } from './nav-link'
-import { Separator } from './ui/separator'
 import { ThemeToggle } from './theme/theme-toggle'
+import { Separator } from './ui/separator'
 
 export function Header() {
   return (
@@ -14,7 +14,9 @@ export function Header() {
 
         <Separator orientation="vertical" className="h-6" />
 
-        <h1 className='font-bold text-xl'>Musicos<strong className='text-primary'>On</strong></h1>
+        <h1 className="text-xl font-bold">
+          Musicos<strong className="text-primary">On</strong>
+        </h1>
 
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />

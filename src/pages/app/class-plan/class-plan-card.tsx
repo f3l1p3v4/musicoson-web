@@ -31,10 +31,10 @@ export function ClassPlanCard({ plans }: ClassPlanCardProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className='text-xs xs:text-sm'>Data</TableHead>
-              <TableHead className='text-xs xs:text-sm'>Assunto</TableHead>
-              <TableHead className='text-xs xs:text-sm'>Módulos</TableHead>
-              <TableHead className='text-xs xs:text-sm'>Semestre</TableHead>
+              <TableHead className="text-xs xs:text-sm">Data</TableHead>
+              <TableHead className="text-xs xs:text-sm">Assunto</TableHead>
+              <TableHead className="text-xs xs:text-sm">Módulos</TableHead>
+              <TableHead className="text-xs xs:text-sm">Semestre</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -1,6 +1,7 @@
+import { formatISO } from 'date-fns'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { useClassPlanStore } from '@/store/ClassPlanStore'
+
 import { Button } from '@/components/ui/button'
 import {
   DialogContent,
@@ -8,14 +9,17 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { formatISO } from 'date-fns'
+import { useClassPlanStore } from '@/store/ClassPlanStore'
 
 type ClassPlanCreateProps = {
   token: string | null
   onCreateSuccess: () => void
 }
 
-export function ClassPlanCreate({ token, onCreateSuccess }: ClassPlanCreateProps) {
+export function ClassPlanCreate({
+  token,
+  onCreateSuccess,
+}: ClassPlanCreateProps) {
   const { selectedGroup, createClassPlan } = useClassPlanStore()
   const [form, setForm] = useState({
     id: '',
@@ -62,17 +66,59 @@ export function ClassPlanCreate({ token, onCreateSuccess }: ClassPlanCreateProps
     <DialogContent>
       <section className="grid gap-4">
         <DialogHeader>
-          <DialogTitle>Criar nova aula ({selectedGroup.replace('GROUP_', 'Grupo ')})</DialogTitle>
+          <DialogTitle>
+            Criar nova aula ({selectedGroup.replace('GROUP_', 'Grupo ')})
+          </DialogTitle>
         </DialogHeader>
 
-        <Input type="date" name="date" value={form.date} onChange={handleChange} />
-        <Input placeholder="Assunto (subject)" name="subject" value={form.subject} onChange={handleChange} />
-        <Input placeholder="Página" name="page" value={form.page} onChange={handleChange} />
-        <Input placeholder="Exercício" name="exercise" value={form.exercise} onChange={handleChange} />
-        <Input placeholder="Módulos" name="method" value={form.method} onChange={handleChange} />
-        <Input placeholder="Número da aula" name="classNumber" value={form.classNumber} onChange={handleChange} />
-        <Input placeholder="Semestre (ex: S1)" name="semester" value={form.semester} onChange={handleChange} />
-        <Input placeholder="Ano (ex: 2025)" name="ano" value={form.ano} onChange={handleChange} />
+        <Input
+          type="date"
+          name="date"
+          value={form.date}
+          onChange={handleChange}
+        />
+        <Input
+          placeholder="Assunto (subject)"
+          name="subject"
+          value={form.subject}
+          onChange={handleChange}
+        />
+        <Input
+          placeholder="Página"
+          name="page"
+          value={form.page}
+          onChange={handleChange}
+        />
+        <Input
+          placeholder="Exercício"
+          name="exercise"
+          value={form.exercise}
+          onChange={handleChange}
+        />
+        <Input
+          placeholder="Módulos"
+          name="method"
+          value={form.method}
+          onChange={handleChange}
+        />
+        <Input
+          placeholder="Número da aula"
+          name="classNumber"
+          value={form.classNumber}
+          onChange={handleChange}
+        />
+        <Input
+          placeholder="Semestre (ex: S1)"
+          name="semester"
+          value={form.semester}
+          onChange={handleChange}
+        />
+        <Input
+          placeholder="Ano (ex: 2025)"
+          name="ano"
+          value={form.ano}
+          onChange={handleChange}
+        />
       </section>
 
       <Button className="mt-4 h-12 w-full" onClick={handleSubmit}>

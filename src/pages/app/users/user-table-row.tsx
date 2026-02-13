@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { TableCell, TableRow } from '@/components/ui/table'
 
+import { UserDetails } from './user-details'
+
 interface User {
   id: string
   name: string
@@ -18,8 +20,6 @@ interface User {
 interface Props {
   user: User
 }
-
-import { UserDetails } from './user-details'
 
 // interface OrderTableRowProps {}
 
@@ -57,18 +57,25 @@ export function UserTableRow({ user }: Props) {
           <UserDetails user={user} />
         </Dialog>
       </TableCell>
-      <TableCell className='text-xs xs:text-sm'>{user.name}</TableCell>
-      <TableCell className='text-xs xs:text-sm'>{user.instrument || '-'}</TableCell>
-      <TableCell className='text-xs xs:text-sm'>{user.group ? groupMap[user.group] : '-'}</TableCell>
-      <TableCell 
+      <TableCell className="text-xs xs:text-sm">{user.name}</TableCell>
+      <TableCell className="text-xs xs:text-sm">
+        {user.instrument || '-'}
+      </TableCell>
+      <TableCell className="text-xs xs:text-sm">
+        {user.group ? groupMap[user.group] : '-'}
+      </TableCell>
+      <TableCell
         className={`text-xs xs:text-sm ${
-          user.role === 'INSTRUCTOR' ? 'text-primary font-bold'
-            : ''
+          user.role === 'INSTRUCTOR' ? 'font-bold text-primary' : ''
         }`}
-      >{roleMap[user.role] || user.role}</TableCell>
-      <TableCell className='text-xs xs:text-sm'>{user.practical_level ? levelMap[user.practical_level] : '-'}</TableCell>
-      <TableCell className='text-xs xs:text-sm'>{user.email}</TableCell>
-      <TableCell className='text-xs xs:text-sm'>{user.phone || '-'}</TableCell>
+      >
+        {roleMap[user.role] || user.role}
+      </TableCell>
+      <TableCell className="text-xs xs:text-sm">
+        {user.practical_level ? levelMap[user.practical_level] : '-'}
+      </TableCell>
+      <TableCell className="text-xs xs:text-sm">{user.email}</TableCell>
+      <TableCell className="text-xs xs:text-sm">{user.phone || '-'}</TableCell>
     </TableRow>
   )
 }

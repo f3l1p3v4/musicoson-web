@@ -27,7 +27,7 @@ export function FrequencyStudent() {
     GROUP_04: '04',
   }
 
-const getBadgeColor = (faltas: number) => {
+  const getBadgeColor = (faltas: number) => {
     if (faltas === 0) return 'bg-green-500 hover:bg-green-600'
     if (faltas >= 1 && faltas <= 3) return 'bg-gray-500 hover:bg-gray-600'
     return 'bg-red-500 hover:bg-red-600'

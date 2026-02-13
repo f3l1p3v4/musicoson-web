@@ -3,16 +3,15 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useAuthStore } from '@/store/authStore'
-import { useProgramMinimumStore } from '@/store/programMinimumStore'
-
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from '@/components/ui/accordion'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useAuthStore } from '@/store/authStore'
+import { useProgramMinimumStore } from '@/store/programMinimumStore'
 
 export function ProgramMinimum() {
   const { programMinimum, fetchProgramMinimum } = useProgramMinimumStore()
@@ -47,7 +46,7 @@ export function ProgramMinimum() {
         PROGRAMA MÍNIMO PARA MÚSICOS – 2023
       </h1>
 
-{/*       {programMinimum.map((program, programIndex) => (
+      {/*       {programMinimum.map((program, programIndex) => (
         <div key={programIndex}>
           <h2 className="mb-6 text-left text-xl font-bold md:text-2xl">
             {program.instrument}
@@ -88,16 +87,16 @@ export function ProgramMinimum() {
             ),
           )}
         </div>
-))}*/}
+))} */}
 
       <Accordion type="single" collapsible className="w-full space-y-3">
         {programMinimum.map((program, programIndex) => (
-          <AccordionItem 
-            key={programIndex} 
+          <AccordionItem
+            key={programIndex}
             value={`item-${programIndex}`}
-            className="border-none bg-slate-50/50 rounded-xl px-4 transition-all hover:bg-slate-100/50"
+            className="rounded-xl border-none bg-slate-50/50 px-4 transition-all hover:bg-slate-100/50"
           >
-            <AccordionTrigger className="py-4 hover:no-underline border-none">
+            <AccordionTrigger className="border-none py-4 hover:no-underline">
               <span className="text-lg font-medium tracking-tight text-gray-700">
                 {program.instrument}
               </span>
@@ -108,43 +107,46 @@ export function ProgramMinimum() {
                 {(['meetings', 'cults', 'officialization'] as const).map(
                   (category: keyof typeof program) => (
                     <div key={category} className="space-y-2">
-                      <h4 className="text-[10px] font-bold uppercase tracking-widest text-primary ml-1">
+                      <h4 className="ml-1 text-[10px] font-bold uppercase tracking-widest text-primary">
                         {category === 'meetings'
                           ? 'Culto de Jovens'
                           : category === 'cults'
                             ? 'Culto Oficial'
                             : 'Oficialização'}
                       </h4>
-                      
-                      <div className="bg-white rounded-lg p-3 shadow-sm border border-slate-100">
+
+                      <div className="rounded-lg border border-slate-100 bg-white p-3 shadow-sm">
                         {Array.isArray(program[category]) &&
                         (program[category] as any[]).length > 0 ? (
                           (program[category] as any[]).map((item, index) => (
-                            <p 
-                              key={index} 
-                              className={`text-xs leading-relaxed mb-1 last:mb-0 ${
-                                item.name.startsWith("Obs") 
-                                  ? "font-bold text-slate-600 mt-2" 
-                                  : "text-slate-600"
+                            <p
+                              key={index}
+                              className={`mb-1 text-xs leading-relaxed last:mb-0 ${
+                                item.name.startsWith('Obs')
+                                  ? 'mt-2 font-bold text-slate-600'
+                                  : 'text-slate-600'
                               }`}
                             >
                               {item.name}
-                              {index < (program[category] as any[]).length - 1 && 
-                                !(program[category] as any[])[index + 1].name.startsWith("Obs") && (
+                              {index <
+                                (program[category] as any[]).length - 1 &&
+                                !(program[category] as any[])[
+                                  index + 1
+                                ].name.startsWith('Obs') && (
                                   <span className="mx-2 inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
                                     OU
                                   </span>
-                              )}
+                                )}
                             </p>
                           ))
                         ) : (
-                          <p className="text-xs text-slate-400 italic">
+                          <p className="text-xs italic text-slate-400">
                             Nenhum dado encontrado.
                           </p>
                         )}
                       </div>
                     </div>
-                  )
+                  ),
                 )}
               </div>
             </AccordionContent>
@@ -160,10 +162,12 @@ export function ProgramMinimum() {
         </CardHeader>
         <CardContent className="space-y-1 xs:pt-2">
           <p className="mt-2 text-xs font-medium text-blue-600">
-            - Os métodos acima poderão ser substituídos por outros de grau mais elevado.
+            - Os métodos acima poderão ser substituídos por outros de grau mais
+            elevado.
           </p>
           <p className="mt-2 text-xs font-medium text-blue-600">
-            - Todos os Instrumentos deverão saber executar a voz principal, voz alternativa e o soprano, devendo ser apresentado nos testes. 
+            - Todos os Instrumentos deverão saber executar a voz principal, voz
+            alternativa e o soprano, devendo ser apresentado nos testes.
           </p>
         </CardContent>
       </Card>

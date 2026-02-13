@@ -1,27 +1,25 @@
-import { useEffect, useState } from 'react'
 import { PlusIcon } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import {
   Table,
   TableBody,
+  TableCell,
   TableHead,
   TableHeader,
   TableRow,
-  TableCell
 } from '@/components/ui/table'
-
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogTrigger } from '@/components/ui/dialog'
-import { Badge } from '@/components/ui/badge'
-
 import { useAuthStore } from '@/store/authStore'
 import { userStore } from '@/store/userStore'
 
-import { UserTableRow } from './user-table-row'
 import { UserCreate } from './user-create'
 import { UserTableFilters } from './user-table-filters'
+import { UserTableRow } from './user-table-row'
 
 export function Users() {
   const { users, fetchUsers } = userStore()
@@ -35,7 +33,7 @@ export function Users() {
     instrumento: '',
     grupo: 'all',
     nivel: 'all-level',
-    role: 'all'
+    role: 'all',
   })
 
   useEffect(() => {
@@ -45,21 +43,36 @@ export function Users() {
   }, [fetchUsers, token])
 
   const filteredUsers = users.filter((user) => {
-    const matchesNome = user.name.toLowerCase().includes(filters.nome.toLowerCase())
-    const matchesInstrumento = filters.instrumento === '' || 
-      (user.instrument?.toLowerCase().includes(filters.instrumento.toLowerCase()))
+    const matchesNome = user.name
+      .toLowerCase()
+      .includes(filters.nome.toLowerCase())
+    const matchesInstrumento =
+      filters.instrumento === '' ||
+      user.instrument?.toLowerCase().includes(filters.instrumento.toLowerCase())
     const matchesGrupo = filters.grupo === 'all' || user.group === filters.grupo
-    const matchesNivel = filters.nivel === 'all-level' || user.practical_level === filters.nivel
+    const matchesNivel =
+      filters.nivel === 'all-level' || user.practical_level === filters.nivel
     const matchesRole = filters.role === 'all' || user.role === filters.role
 
-    return matchesNome && matchesInstrumento && matchesGrupo && matchesNivel && matchesRole
+    return (
+      matchesNome &&
+      matchesInstrumento &&
+      matchesGrupo &&
+      matchesNivel &&
+      matchesRole
+    )
   })
 
   // Efeito para mostrar o Toast quando o usuário filtra
   useEffect(() => {
     // Só mostra se não estiver carregando e se houver algum filtro ativo
-    const hasActiveFilter = filters.nome || filters.instrumento || filters.grupo !== 'all' || filters.nivel !== 'all-level' || filters.role !== 'all'
-    
+    const hasActiveFilter =
+      filters.nome ||
+      filters.instrumento ||
+      filters.grupo !== 'all' ||
+      filters.nivel !== 'all-level' ||
+      filters.role !== 'all'
+
     if (!loading && hasActiveFilter) {
       toast.info(`Encontrado(s) ${filteredUsers.length} usuário(s)`, {
         id: 'filter-count', // ID fixo evita que fiquem subindo vários toasts repetidos
@@ -73,27 +86,38 @@ export function Users() {
     setIsDialogOpen(false)
   }
 
-  if (loading) return <p className="p-8 text-center text-sm text-muted-foreground">Carregando usuários...</p>
+  if (loading)
+    return (
+      <p className="p-8 text-center text-sm text-muted-foreground">
+        Carregando usuários...
+      </p>
+    )
 
   return (
     <>
       <button
         onClick={() => navigate(-1)}
-        className="mb-2 text-[14px] w-max rounded py-2 hover:pointer"
+        className="hover:pointer mb-2 w-max rounded py-2 text-[14px]"
       >
         ← Voltar
       </button>
 
-      <div className="flex flex-col gap-4 mb-6">
+      <div className="mb-6 flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="text-xl xs:text-3xl font-bold tracking-tight">Usuários</h1>
-            <Badge variant="secondary" className="h-6 px-2 text-xs font-semibold">
-              {filteredUsers.length} {filteredUsers.length === 1 ? 'resultado' : 'resultados'}
+            <h1 className="text-xl font-bold tracking-tight xs:text-3xl">
+              Usuários
+            </h1>
+            <Badge
+              variant="secondary"
+              className="h-6 px-2 text-xs font-semibold"
+            >
+              {filteredUsers.length}{' '}
+              {filteredUsers.length === 1 ? 'resultado' : 'resultados'}
             </Badge>
           </div>
         </div>
-        
+
         <UserTableFilters filters={filters} setFilters={setFilters} />
       </div>
 
@@ -102,13 +126,17 @@ export function Users() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[64px]"></TableHead>
-              <TableHead className='text-xs xs:text-sm'>Nome</TableHead>
-              <TableHead className='text-xs xs:text-sm'>Instrumento</TableHead>
-              <TableHead className='text-xs xs:text-sm'>Grupo</TableHead>
-              <TableHead className='text-xs xs:text-sm'>Tipo de Usuário</TableHead>
-              <TableHead className='text-xs xs:text-sm'>Nível Prático</TableHead>
-              <TableHead className='text-xs xs:text-sm'>E-mail</TableHead>
-              <TableHead className='text-xs xs:text-sm'>Celular</TableHead>
+              <TableHead className="text-xs xs:text-sm">Nome</TableHead>
+              <TableHead className="text-xs xs:text-sm">Instrumento</TableHead>
+              <TableHead className="text-xs xs:text-sm">Grupo</TableHead>
+              <TableHead className="text-xs xs:text-sm">
+                Tipo de Usuário
+              </TableHead>
+              <TableHead className="text-xs xs:text-sm">
+                Nível Prático
+              </TableHead>
+              <TableHead className="text-xs xs:text-sm">E-mail</TableHead>
+              <TableHead className="text-xs xs:text-sm">Celular</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -127,7 +155,7 @@ export function Users() {
         </Table>
       </div>
 
-      {userRole === 'INSTRUCTOR' && (        
+      {userRole === 'INSTRUCTOR' && (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button
