@@ -3,11 +3,24 @@ import { NavLink } from 'react-router-dom'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-type FrequencyStudentProps = {
-  qtdStudents: number
+interface Student {
+  studentAttendance: {
+    status: string
+  }[]
 }
 
-export function FrequencyStudent({ qtdStudents }: FrequencyStudentProps) {
+type FrequencyStudentProps = {
+  students: Student[] | null
+}
+
+export function FrequencyStudent({ students }: FrequencyStudentProps) {
+  const studentsWithMoreThan3Absences =
+    students?.filter(
+      (student) =>
+        student.studentAttendance.filter((att) => att.status === 'ABSENT')
+          .length > 3,
+    ).length || 0
+
   return (
     <NavLink className="flex w-full" to="/frequency-student">
       <Card className="flex w-full flex-col transition-colors hover:bg-accent/50">
@@ -18,13 +31,27 @@ export function FrequencyStudent({ qtdStudents }: FrequencyStudentProps) {
         </CardHeader>
 
         <CardContent className="flex flex-col items-start justify-center pt-2">
-          <div className="mb-3 rounded-full bg-primary/10 p-2">
-            <ChartNoAxesCombined className="h-8 w-8 text-primary sm:h-10 sm:w-10" />
+          <div 
+            className={`mb-3 rounded-full p-2 ${
+              studentsWithMoreThan3Absences > 3
+                ? 'bg-green-100'
+                : 'bg-gray-100'
+            }`}
+          >
+            <ChartNoAxesCombined
+              className={`h-8 w-8 sm:h-10 sm:w-10 ${
+                studentsWithMoreThan3Absences > 3
+                  ? 'text-red-500'
+                  : 'text-black'
+              }`}
+            />
           </div>
 
           <div className="space-y-0.5">
             <p className="text-xs text-muted-foreground">
-              {qtdStudents} Alunos
+              {studentsWithMoreThan3Absences > 0
+                ? `${studentsWithMoreThan3Absences} com alerta de falta`
+                : 'Nenhum alerta de falta'}
             </p>
           </div>
         </CardContent>

@@ -68,9 +68,9 @@ export function Dashboard() {
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
           {role === 'INSTRUCTOR' && <Task />}
-          {role === 'INSTRUCTOR' && <Call />}
+          {role === 'INSTRUCTOR' && <Call students={students} />}
           {role === 'INSTRUCTOR' && (
-            <FrequencyStudent qtdStudents={students?.length ?? 0} />
+            <FrequencyStudent students={students} />
           )}
           {role === 'STUDENT' && <TaskStudent />}
           {role === 'STUDENT' && <Frequency />}

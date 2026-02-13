@@ -30,7 +30,7 @@ export function Tasks() {
   const { token, role, id } = useAuthStore()
   const { users, fetchUsers } = userStore()
 
-  const [statusFilter, setStatusFilter] = useState<Status>('ALL')
+  const [statusFilter, setStatusFilter] = useState<Status>('PENDING')
   const currentYear = new Date().getFullYear().toString()
 
   useEffect(() => {
@@ -189,10 +189,8 @@ export function Tasks() {
                         )}
                       </CardHeader>
                       <CardContent className="grid gap-2">
-                        {/* Exibe o Título Limpo */}
                         <p className="text-sm font-semibold">{cleanTitle}</p>
 
-                        {/* Badges Dinâmicos (Páginas, Lições e Hinos) */}
                         <div className="mt-0.5 flex flex-wrap gap-1">
                           {pages.length > 0 && (
                             <Badge

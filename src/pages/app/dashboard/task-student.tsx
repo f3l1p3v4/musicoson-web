@@ -7,30 +7,24 @@ import { useAuthStore } from '@/store/authStore'
 import { useTaskStore } from '@/store/taskStore'
 
 export function TaskStudent() {
-  // Acessa os estados de Task e Auth
-  const { tasks, fetchTasksByInstructor, fetchTasksByStudent } = useTaskStore()
-  const { token, role, id } = useAuthStore()
+  const { tasks, fetchTasksByStudent } = useTaskStore()
+  const { token, id } = useAuthStore()
 
-  // Dispara a busca se as tarefas ainda não estiverem carregadas
   useEffect(() => {
-    if (token && role && id && tasks.length === 0) {
-      if (role === 'INSTRUCTOR') {
-        fetchTasksByInstructor(token, id)
-      } else {
-        fetchTasksByStudent(token, id)
-      }
+    if (token && id) {
+      fetchTasksByStudent(token, id)
     }
-  }, [
-    token,
-    role,
-    id,
-    tasks.length,
-    fetchTasksByInstructor,
-    fetchTasksByStudent,
-  ])
+  }, [token, id, fetchTasksByStudent])
 
-  // Calcula a quantidade de pendentes
   const pendingTasks = tasks.filter((task) => task.status === 'PENDING').length
+
+  const sevenDaysAgo = new Date()
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+  const hasOldPendingTask = tasks.some(
+    (task) =>
+      task.status === 'PENDING' && new Date(task.createdAt) < sevenDaysAgo,
+  )
 
   return (
     <NavLink className="flex w-full" to="/tasks">
@@ -42,8 +36,12 @@ export function TaskStudent() {
         </CardHeader>
 
         <CardContent className="flex flex-col items-start justify-center pt-2">
-          <div className="mb-3 rounded-full bg-primary/10 p-2">
-            <ClipboardList className="h-8 w-8 text-primary sm:h-10 sm:w-10" />
+          <div
+            className={`mb-3 rounded-full p-2 ${hasOldPendingTask ? 'bg-red-100' : 'bg-gray-100'}`}
+          >
+            <ClipboardList
+              className={`h-8 w-8 sm:h-10 sm:w-10 ${hasOldPendingTask ? 'text-red-500' : 'text-black'}`}
+            />
           </div>
 
           <div className="space-y-0.5">
