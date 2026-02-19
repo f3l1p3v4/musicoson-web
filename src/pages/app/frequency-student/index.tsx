@@ -34,7 +34,7 @@ export function FrequencyStudent() {
   }
 
   const getFaltasText = (faltas: number) => {
-    if (faltas === 0) return 'Nenhuma falta'
+    if (faltas === 0) return '0 Falta'
     if (faltas === 1) return '1 Falta'
     return `${faltas} Faltas`
   }

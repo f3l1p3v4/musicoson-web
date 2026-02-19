@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/select'
 import { useAuthStore } from '@/store/authStore'
 import { Group, TaskCategory, useTaskStore } from '@/store/taskStore'
-import { userStore } from '@/store/userStore' // Certifique-se que o store de usuários existe
+import { userStore } from '@/store/userStore'
 
 export function TaskCreate() {
   const { createTask } = useTaskStore()
@@ -41,14 +41,36 @@ export function TaskCreate() {
   const [selectedPages, setSelectedPages] = useState<number[]>([])
   const [selectedLessons, setSelectedLessons] = useState<number[]>([])
   const [selectedHymns, setSelectedHymns] = useState<number[]>([])
-  const [selectedRecipient, setSelectedRecipient] = useState<string>('')
+  const [selectedRecipients, setSelectedRecipients] = useState<
+    { id: string; name: string; isGroup: boolean }[]
+  >([])
 
-  // Carrega usuários para o Select
   useEffect(() => {
     if (token && users.length === 0) {
       fetchUsers(token)
     }
   }, [token, users.length, fetchUsers])
+
+  const handleAddRecipient = (val: string) => {
+    if (!val) return
+
+    const isGroup = val.startsWith('GROUP_')
+    let name = ''
+
+    if (isGroup) {
+      name = val.replace('GROUP_', 'Grupo ')
+    } else {
+      const user = users.find((u) => u.id === val)
+      name = user ? user.name : val
+    }
+
+    if (!selectedRecipients.some((r) => r.id === val)) {
+      setSelectedRecipients([
+        ...selectedRecipients,
+        { id: val, name, isGroup },
+      ])
+    }
+  }
 
   const handleAddPage = () => {
     const num = parseInt(pageInput)
@@ -75,7 +97,7 @@ export function TaskCreate() {
   }
 
   const handleSave = async () => {
-    if (!selectedCategory || !description || !selectedRecipient) {
+    if (!selectedCategory || !description || selectedRecipients.length === 0) {
       alert('Selecione a categoria, descrição e para quem é a tarefa.')
       return
     }
@@ -91,18 +113,24 @@ export function TaskCreate() {
     if (selectedHymns.length > 0)
       dynamicTitle += ` (Hinos: ${selectedHymns.join(', ')})`
 
-    const isGroup = selectedRecipient.startsWith('GROUP_')
+    const studentIds = selectedRecipients
+      .filter((r) => !r.isGroup)
+      .map((r) => r.id)
+    const groups = selectedRecipients
+      .filter((r) => r.isGroup)
+      .map((r) => r.id as Group)
 
     const payload = {
       title: dynamicTitle,
       description,
       observation,
       category: selectedCategory as TaskCategory,
-      group: isGroup ? (selectedRecipient as Group) : undefined,
-      studentId: !isGroup ? selectedRecipient : undefined,
+      studentIds,
+      groups,
     }
 
     const success = await createTask(payload, token!)
+
     setIsLoading(false)
 
     if (success) {
@@ -231,35 +259,53 @@ export function TaskCreate() {
           onChange={(e) => setObservation(e.target.value)}
         />
 
-        <Select onValueChange={setSelectedRecipient}>
-          <SelectTrigger className="h-12">
-            <SelectValue placeholder="Para quem é esta tarefa?" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel className="flex items-center gap-2">
-                <Users className="h-4 w-4" /> Grupos
-              </SelectLabel>
-              <SelectItem value="GROUP_01">Grupo 01</SelectItem>
-              <SelectItem value="GROUP_02">Grupo 02</SelectItem>
-              <SelectItem value="GROUP_03">Grupo 03</SelectItem>
-              <SelectItem value="GROUP_04">Grupo 04</SelectItem>
-            </SelectGroup>
-            <SelectSeparator />
-            <SelectGroup>
-              <SelectLabel className="flex items-center gap-2">
-                <UserIcon className="h-4 w-4" /> Alunos
-              </SelectLabel>
-              {users
-                .filter((u) => u.role === 'STUDENT')
-                .map((u) => (
-                  <SelectItem key={u.id} value={u.id}>
-                    {u.name}
-                  </SelectItem>
-                ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <div className="grid gap-2">
+          <Select onValueChange={handleAddRecipient} value="">
+            <SelectTrigger className="h-12">
+              <SelectValue placeholder="Para quem é esta tarefa?" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel className="flex items-center gap-2">
+                  <Users className="h-4 w-4" /> Grupos
+                </SelectLabel>
+                <SelectItem value="GROUP_01">Grupo 01</SelectItem>
+                <SelectItem value="GROUP_02">Grupo 02</SelectItem>
+                <SelectItem value="GROUP_03">Grupo 03</SelectItem>
+                <SelectItem value="GROUP_04">Grupo 04</SelectItem>
+              </SelectGroup>
+              <SelectSeparator />
+              <SelectGroup>
+                <SelectLabel className="flex items-center gap-2">
+                  <UserIcon className="h-4 w-4" /> Alunos
+                </SelectLabel>
+                {users
+                  .filter((u) => u.role === 'STUDENT')
+                  .map((u) => (
+                    <SelectItem key={u.id} value={u.id}>
+                      {u.name}
+                    </SelectItem>
+                  ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          <div className="flex flex-wrap gap-1">
+            {selectedRecipients.map((r) => (
+              <Badge key={r.id} className="py-1 pl-2 pr-1">
+                {r.name}{' '}
+                <X
+                  className="ml-1 h-3 w-3 cursor-pointer"
+                  onClick={() =>
+                    setSelectedRecipients(
+                      selectedRecipients.filter((x) => x.id !== r.id),
+                    )
+                  }
+                />
+              </Badge>
+            ))}
+          </div>
+        </div>
 
         <Button
           className="h-14 w-full text-lg font-bold shadow-lg"

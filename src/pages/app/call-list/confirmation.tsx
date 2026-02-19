@@ -52,8 +52,11 @@ export function Confirmation({
       return
     }
 
+    const today = new Date().getDay()
+    const isAllowedDay = today === 1 || today === 6 // 1 = Segunda, 6 = Sábado
+
     if (student.attendanceId) {
-      // Editar presença existente de hoje
+      // Editar presença existente (permitido em qualquer dia se o registro já existir)
       const response = await updateAttendance({
         attendanceId: student.attendanceId,
         status,
@@ -66,6 +69,14 @@ export function Confirmation({
         toast.error(response.responseData.message)
       }
     } else {
+      // Bloqueio para novos registros
+      if (!isAllowedDay) {
+        toast.warning(
+          'A chamada só pode ser registrada às segundas ou sábados.',
+        )
+        return
+      }
+
       // Criar nova presença (fluxo normal da chamada)
       const response = await markAttendance({
         date: new Date().toISOString(),

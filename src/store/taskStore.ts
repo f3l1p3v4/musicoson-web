@@ -29,8 +29,8 @@ interface CreateTaskInput {
   observation?: string
   delivery_date?: string
   category: TaskCategory
-  studentId?: string
-  group?: Group
+  studentIds?: string[]
+  groups?: Group[]
 }
 
 interface TaskStore {
@@ -100,52 +100,56 @@ export const useTaskStore = create<TaskStore>((set) => ({
 
   createTask: async (data: CreateTaskInput, token: string) => {
     try {
-      if (data.group) {
-        const { users } = userStore.getState()
-        const studentsInGroup = users.filter(
-          (user) => user.role === 'STUDENT' && user.group === data.group,
-        )
+      const { users } = userStore.getState()
+      const allStudentIds = new Set<string>()
 
-        if (studentsInGroup.length === 0) {
-          console.warn(`No students found in group ${data.group}`)
-          return false
-        }
+      // 1. Adicionar alunos individuais
+      if (data.studentIds) {
+        data.studentIds.forEach((id) => allStudentIds.add(id))
+      }
 
-        const taskPromises = studentsInGroup.map((student) => {
-          const taskData = {
-            ...data,
-            studentId: student.id,
-            group: undefined,
-          }
-          return api.post('/tasks', taskData, {
+      // 2. Adicionar alunos dos grupos selecionados
+      if (data.groups && data.groups.length > 0) {
+        data.groups.forEach((groupName) => {
+          const studentsInGroup = users.filter(
+            (user) => user.role === 'STUDENT' && user.group === groupName,
+          )
+          studentsInGroup.forEach((student) => allStudentIds.add(student.id))
+        })
+      }
+
+      if (allStudentIds.size === 0) {
+        console.warn('No students selected for task creation')
+        return false
+      }
+
+      const taskPromises = Array.from(allStudentIds).map((studentId) => {
+        const { studentIds, groups, ...rest } = data
+        return api.post<Task>(
+          '/tasks',
+          { ...rest, studentId },
+          {
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
             },
-          })
-        })
-
-        const responses = await Promise.all(taskPromises)
-        const allSuccess = responses.every((res) => res.status === 201)
-
-        if (allSuccess) {
-          return true
-        }
-        return false
-      } else {
-        const response = await api.post('/tasks', data, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
           },
-        })
+        )
+      })
 
-        if (response.status === 201) {
-          set((state) => ({ tasks: [...state.tasks, response.data] }))
-          return true
-        }
-        return false
+      const responses = await Promise.all(taskPromises)
+      const successfulTasks = responses
+        .filter((res) => res.status === 201)
+        .map((res) => res.data)
+
+      if (successfulTasks.length > 0) {
+        set((state) => ({
+          tasks: [...successfulTasks, ...state.tasks],
+        }))
+        return true
       }
+
+      return false
     } catch (error) {
       console.error('Error creating task:', error)
       return false

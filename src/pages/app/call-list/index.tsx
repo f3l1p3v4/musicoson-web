@@ -224,31 +224,86 @@ export function CallList() {
                 <CardContent className="space-y-1 xs:pt-2">
                   <p className="text-md mt-1 font-bold">{student.name}</p>
                   <p className="mt-2 text-xs">{student.instrument}</p>
-                  <section className="flex gap-2 pt-2">
-                    {student.studentAttendance.length > 0 ? (
-                      [...student.studentAttendance]
-                        .slice(-5)
-                        .map((attendance) => (
+                  <section className="flex flex-wrap gap-2 pt-2">
+                    {(() => {
+                      // 1. Pega todas as datas únicas (apenas data, sem hora) de todos os alunos do mesmo grupo
+                      const allNormalizedDates = Array.from(
+                        new Set(
+                          students
+                            ?.filter((s) => s.group === student.group)
+                            .flatMap((s) =>
+                              s.studentAttendance.map(
+                                (a) => new Date(a.date).toISOString().split('T')[0],
+                              ),
+                            ) || [],
+                        ),
+                      ).sort()
+
+                      // 2. Filtra para mostrar apenas Sábados (6) e Segundas (1) e as últimas 5 dessas datas
+                      const relevantGlobalDates = allNormalizedDates.slice(-5)
+
+                      if (relevantGlobalDates.length === 0) {
+                        return (
+                          <p className="text-sm text-gray-500">
+                            Nenhuma presença registrada
+                          </p>
+                        )
+                      }
+
+                      return relevantGlobalDates.map((dateStr) => {
+                        const attendance = student.studentAttendance.find(
+                          (a) =>
+                            new Date(a.date).toISOString().split('T')[0] ===
+                            dateStr,
+                        )
+
+                        const dateObj = new Date(dateStr + 'T00:00:00')
+                        const dayLabel = dateObj.getDay() === 1 ? 'Seg' : 'Sáb'
+                        const dateOnly = dateObj.toLocaleDateString('pt-BR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          timeZone: 'UTC',
+                        })
+
+                        const badgeContent = (
+                          <div className="flex flex-col items-start leading-tight sm:flex-row sm:items-center sm:gap-1">
+                            <span className="text-[10px] sm:text-xs">
+                              {dayLabel}
+                            </span>
+                            <span className="text-[10px] sm:text-xs">
+                              {dateOnly}
+                            </span>
+                          </div>
+                        )
+
+                        if (attendance) {
+                          return (
+                            <Badge
+                              key={dateStr}
+                              variant="default"
+                              className={`px-2 py-1 ${
+                                attendance.status === 'PRESENT'
+                                  ? 'bg-green-500 hover:bg-green-600'
+                                  : 'bg-red-500 hover:bg-red-600'
+                              }`}
+                            >
+                              {badgeContent}
+                            </Badge>
+                          )
+                        }
+
+                        // Aluno não tem registro nessa data global do grupo (cinza)
+                        return (
                           <Badge
-                            key={attendance.date}
-                            variant="default"
-                            className={`text-xs ${attendance.status === 'PRESENT' ? 'bg-green-500' : 'bg-red-500'}`}
+                            key={dateStr}
+                            variant="secondary"
+                            className="bg-gray-400 px-2 py-1 text-white hover:bg-gray-400/80"
                           >
-                            {new Date(attendance.date).toLocaleDateString(
-                              'pt-BR',
-                              {
-                                day: '2-digit',
-                                month: '2-digit',
-                                timeZone: 'UTC',
-                              },
-                            )}
+                            {badgeContent}
                           </Badge>
-                        ))
-                    ) : (
-                      <p className="text-sm text-gray-500">
-                        Nenhuma presença registrada
-                      </p>
-                    )}
+                        )
+                      })
+                    })()}
                   </section>
                 </CardContent>
               </Card>

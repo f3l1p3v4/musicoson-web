@@ -92,14 +92,20 @@ export function Tasks() {
   }
 
   const filteredTasks = useMemo(() => {
-    return tasks.filter((task) => {
-      const taskYear = getYear(new Date(task.createdAt)).toString()
-      const matchesStatus =
-        statusFilter === 'ALL' || task.status === statusFilter
-      const matchesYear = taskYear === currentYear
+    return tasks
+      .filter((task) => {
+        const taskYear = getYear(new Date(task.createdAt)).toString()
+        const matchesStatus =
+          statusFilter === 'ALL' || task.status === statusFilter
+        const matchesYear = taskYear === currentYear
 
-      return matchesStatus && matchesYear
-    })
+        return matchesStatus && matchesYear
+      })
+      .sort((a, b) => {
+        return (
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        )
+      })
   }, [tasks, statusFilter, currentYear])
 
   return (
