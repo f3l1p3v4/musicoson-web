@@ -3,6 +3,7 @@
 import { format, getYear } from 'date-fns'
 import { Loader2, PlusIcon } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -29,6 +30,7 @@ export function Tasks() {
     useTaskStore()
   const { token, role, id } = useAuthStore()
   const { users, fetchUsers } = userStore()
+    const navigate = useNavigate()
 
   const [statusFilter, setStatusFilter] = useState<Status>('PENDING')
   const currentYear = new Date().getFullYear().toString()
@@ -111,6 +113,12 @@ export function Tasks() {
   return (
     <>
       <section className="grid gap-4 ">
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-2 w-max rounded py-2 text-[14px] text-slate-600 transition-colors hover:text-black"
+      >
+        ← Voltar
+      </button>
         <h1 className="mb-2 text-left text-3xl font-bold">Tarefas</h1>
 
         <div className="flex flex-col gap-3">
