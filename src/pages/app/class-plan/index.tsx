@@ -35,6 +35,12 @@ export function ClassPlan() {
     }
   }, [fetchClassPlans, token])
 
+  useEffect(() => {
+    if (user && role !== 'INSTRUCTOR' && user.group) {
+      setSelectedGroup(user.group)
+    }
+  }, [user, role, setSelectedGroup])
+
   const handleCreateSuccess = () => {
     if (token) {
       fetchClassPlans(token)
@@ -64,48 +70,35 @@ export function ClassPlan() {
         onValueChange={setSelectedGroup}
         className="w-full"
       >
-        <TabsList className="grid w-full grid-cols-4">
-          {(role === 'INSTRUCTOR' || (user && user.group === 'GROUP_01')) && (
-            <TabsTrigger className="text-xs xs:text-sm" value="GROUP_01">
-              Grupo 01
-            </TabsTrigger>
-          )}
-          {(role === 'INSTRUCTOR' || (user && user.group === 'GROUP_02')) && (
-            <TabsTrigger className="text-xs xs:text-sm" value="GROUP_02">
-              Grupo 02
-            </TabsTrigger>
-          )}
-          {(role === 'INSTRUCTOR' || (user && user.group === 'GROUP_03')) && (
-            <TabsTrigger className="text-xs xs:text-sm" value="GROUP_03">
-              Grupo 03
-            </TabsTrigger>
-          )}
-          {(role === 'INSTRUCTOR' || (user && user.group === 'GROUP_04')) && (
-            <TabsTrigger className="text-xs xs:text-sm" value="GROUP_04">
-              Grupo 04
-            </TabsTrigger>
+        <TabsList
+          className={`grid w-full ${role === 'INSTRUCTOR' ? 'grid-cols-4' : 'grid-cols-1'}`}
+        >
+          {role === 'INSTRUCTOR' ? (
+            <>
+              <TabsTrigger className="text-xs xs:text-sm" value="GROUP_01">
+                Grupo 01
+              </TabsTrigger>
+              <TabsTrigger className="text-xs xs:text-sm" value="GROUP_02">
+                Grupo 02
+              </TabsTrigger>
+              <TabsTrigger className="text-xs xs:text-sm" value="GROUP_03">
+                Grupo 03
+              </TabsTrigger>
+              <TabsTrigger className="text-xs xs:text-sm" value="GROUP_04">
+                Grupo 04
+              </TabsTrigger>
+            </>
+          ) : (
+            user?.group && (
+              <TabsTrigger className="text-xs xs:text-sm" value={user.group}>
+                {user.group.replace('GROUP_', 'Grupo ')}
+              </TabsTrigger>
+            )
           )}
         </TabsList>
-        {(role === 'INSTRUCTOR' || (user && user.group === 'GROUP_01')) && (
-          <TabsContent value="GROUP_01">
-            <ClassPlanCard plans={filteredPlans} />
-          </TabsContent>
-        )}
-        {(role === 'INSTRUCTOR' || (user && user.group === 'GROUP_02')) && (
-          <TabsContent value="GROUP_02">
-            <ClassPlanCard plans={filteredPlans} />
-          </TabsContent>
-        )}
-        {(role === 'INSTRUCTOR' || (user && user.group === 'GROUP_03')) && (
-          <TabsContent value="GROUP_03">
-            <ClassPlanCard plans={filteredPlans} />
-          </TabsContent>
-        )}
-        {(role === 'INSTRUCTOR' || (user && user.group === 'GROUP_04')) && (
-          <TabsContent value="GROUP_04">
-            <ClassPlanCard plans={filteredPlans} />
-          </TabsContent>
-        )}
+        <TabsContent value={selectedGroup}>
+          <ClassPlanCard plans={filteredPlans} />
+        </TabsContent>
       </Tabs>
 
       {role === 'INSTRUCTOR' && (
