@@ -104,9 +104,17 @@ export function Tasks() {
         return matchesStatus && matchesYear
       })
       .sort((a, b) => {
-        return (
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        )
+        const dateA = new Date(a.createdAt).getTime()
+        const dateB = new Date(b.createdAt).getTime()
+
+        if (dateA !== dateB) {
+          return dateA - dateB
+        }
+
+        const nameA = a.studentId ? (userMap[a.studentId] || '') : ''
+        const nameB = b.studentId ? (userMap[b.studentId] || '') : ''
+
+        return nameA.localeCompare(nameB)
       })
   }, [tasks, statusFilter, currentYear])
 

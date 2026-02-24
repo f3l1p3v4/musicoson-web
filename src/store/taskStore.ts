@@ -60,7 +60,19 @@ export const useTaskStore = create<TaskStore>((set) => ({
       const response = await api.get<Task[]>('/tasks', {
         headers: { Authorization: `Bearer ${token}` },
       })
-      set({ tasks: response.data })
+
+      const { users } = userStore.getState()
+      const sortedTasks = response.data.sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime()
+        const dateB = new Date(b.createdAt).getTime()
+        if (dateA !== dateB) return dateA - dateB
+
+        const nameA = users.find((u) => u.id === a.studentId)?.name || ''
+        const nameB = users.find((u) => u.id === b.studentId)?.name || ''
+        return nameA.localeCompare(nameB)
+      })
+
+      set({ tasks: sortedTasks })
     } catch (error) {
       console.error('Error fetching tasks:', error)
     } finally {
@@ -75,7 +87,19 @@ export const useTaskStore = create<TaskStore>((set) => ({
         params: { instructorId },
         headers: { Authorization: `Bearer ${token}` },
       })
-      set({ tasks: response.data })
+
+      const { users } = userStore.getState()
+      const sortedTasks = response.data.sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime()
+        const dateB = new Date(b.createdAt).getTime()
+        if (dateA !== dateB) return dateA - dateB
+
+        const nameA = users.find((u) => u.id === a.studentId)?.name || ''
+        const nameB = users.find((u) => u.id === b.studentId)?.name || ''
+        return nameA.localeCompare(nameB)
+      })
+
+      set({ tasks: sortedTasks })
     } catch (error) {
       console.error('Error fetching instructor tasks:', error)
     } finally {
@@ -90,7 +114,19 @@ export const useTaskStore = create<TaskStore>((set) => ({
         params: { studentId },
         headers: { Authorization: `Bearer ${token}` },
       })
-      set({ tasks: response.data })
+
+      const { users } = userStore.getState()
+      const sortedTasks = response.data.sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime()
+        const dateB = new Date(b.createdAt).getTime()
+        if (dateA !== dateB) return dateA - dateB
+
+        const nameA = users.find((u) => u.id === a.studentId)?.name || ''
+        const nameB = users.find((u) => u.id === b.studentId)?.name || ''
+        return nameA.localeCompare(nameB)
+      })
+
+      set({ tasks: sortedTasks })
     } catch (error) {
       console.error('Error fetching student tasks:', error)
     } finally {
@@ -143,9 +179,22 @@ export const useTaskStore = create<TaskStore>((set) => ({
         .map((res) => res.data)
 
       if (successfulTasks.length > 0) {
-        set((state) => ({
-          tasks: [...successfulTasks, ...state.tasks],
-        }))
+        set((state) => {
+          const allTasks = [...successfulTasks, ...state.tasks]
+          const { users } = userStore.getState()
+
+          const sortedTasks = allTasks.sort((a, b) => {
+            const dateA = new Date(a.createdAt).getTime()
+            const dateB = new Date(b.createdAt).getTime()
+            if (dateA !== dateB) return dateA - dateB
+
+            const nameA = users.find((u) => u.id === a.studentId)?.name || ''
+            const nameB = users.find((u) => u.id === b.studentId)?.name || ''
+            return nameA.localeCompare(nameB)
+          })
+
+          return { tasks: sortedTasks }
+        })
         return true
       }
 

@@ -73,6 +73,7 @@ export const useStudentHistoryStore = create<StudentHistoryStore>((set) => ({
         },
       )
 
+      console.error('fetchStudentHistory:', response.data)
       set({ studentHistory: response.data, isLoading: false })
     } catch (error) {
       let errorMessage = 'Erro ao buscar histórico do aluno'

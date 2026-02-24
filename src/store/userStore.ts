@@ -52,7 +52,12 @@ export const userStore = create<UserStore>((set) => ({
           Authorization: `Bearer ${token}`,
         },
       })
-      set({ users: response.data })
+
+      const sortedUsers = response.data.sort((a, b) =>
+        a.name.localeCompare(b.name),
+      )
+
+      set({ users: sortedUsers })
     } catch (error) {
       console.error('Error fetching users:', error)
       throw new Error(
