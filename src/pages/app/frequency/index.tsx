@@ -1,6 +1,4 @@
-'use client'
-
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { Badge } from '@/components/ui/badge'
@@ -13,23 +11,102 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { useAuthStore } from '@/store/authStore'
+import { useAttendanceStore } from '@/store/callListStore'
 import { useStudentHistoryStore } from '@/store/studentHistoryStore'
 
 export function Frequency() {
   const { studentId: studentIdFromParams } = useParams()
   const { token } = useAuthStore()
   const { studentHistory, fetchStudentHistory } = useStudentHistoryStore()
+  const { students, fetchStudentsAttendance } = useAttendanceStore()
   const navigate = useNavigate()
 
   useEffect(() => {
     if (!token) return
     if (studentIdFromParams) {
       fetchStudentHistory(studentIdFromParams, token)
+      fetchStudentsAttendance(token)
     }
-  }, [token, studentIdFromParams])
+  }, [token, studentIdFromParams, fetchStudentHistory, fetchStudentsAttendance])
+
+  // Processa o histórico para garantir pares de teoria/prática e ordem cronológica
+  const processedHistory = useMemo(() => {
+    const student = students?.find((s) => s.id === studentIdFromParams)
+    const allAttendance = student?.studentAttendance || []
+
+    const cards: any[] = []
+
+    studentHistory.forEach((item) => {
+      // Data original do plano (geralmente Sábado ou Feriado)
+      const planDate = new Date(item.date)
+      const planYear = planDate.getUTCFullYear()
+      const classNum = item.classNumber
+
+      if (classNum && classNum > 0) {
+        // 1. Card Teoria (Sábado) - Pega o registro original (classNumber 1, 2, 3...)
+        // Filtra pelo classNumber E pelo ano da aula no plano
+        const theoryAtt = allAttendance.find(
+          (a) =>
+            a.classNumber === classNum &&
+            new Date(a.date).getUTCFullYear() === planYear,
+        )
+        const isEnsaio = item.subject?.includes('Ensaio do GEM')
+
+        cards.push({
+          id: `theory-${item.id}`,
+          baseClassNum: classNum,
+          labelType: isEnsaio ? 'Ensaio GEM' : 'Teoria',
+          date: new Date(planDate),
+          status: theoryAtt?.status || item.attendance?.status || null,
+          subject: item.subject,
+          page: item.page,
+          exercise: item.exercise,
+          isPractical: false,
+        })
+
+        // 2. Card Prática (Segunda) - Pega o registro +90 (classNumber 91, 92, 93...)
+        const practiceClassNum = classNum + 90
+        const practiceAtt = allAttendance.find(
+          (a) =>
+            a.classNumber === practiceClassNum &&
+            new Date(a.date).getUTCFullYear() === planYear,
+        )
+
+        // Calcula a data da segunda-feira (Sábado + 2 dias) usando UTC
+        const practiceDate = new Date(planDate)
+        practiceDate.setUTCDate(practiceDate.getUTCDate() + 2)
+
+        cards.push({
+          id: practiceAtt?.id || `practice-v-${item.id}`,
+          baseClassNum: classNum,
+          labelType: 'Prática',
+          date: practiceDate,
+          status: practiceAtt?.status || null,
+          subject: 'Aula Prática',
+          isPractical: true,
+          isVirtual: !practiceAtt,
+        })
+      } else {
+        // Item sem número de aula (Feriado, Ensaio, etc.)
+        const isEnsaio = item.subject?.includes('Ensaio do GEM')
+        cards.push({
+          id: item.id,
+          baseClassNum: null,
+          labelType: isEnsaio ? 'Ensaio GEM' : '',
+          date: new Date(planDate),
+          status: item.attendance?.status || null,
+          subject: item.subject,
+          isPractical: false,
+        })
+      }
+    })
+
+    // Ordenação final cronológica rigorosa por data
+    return cards.sort((a, b) => a.date.getTime() - b.date.getTime())
+  }, [studentHistory, students, studentIdFromParams])
 
   // Função para definir a cor baseada no status
-  const getStatusColor = (status?: string) => {
+  const getStatusColor = (status?: string | null) => {
     switch (status) {
       case 'PRESENT':
         return 'bg-green-500'
@@ -53,21 +130,27 @@ export function Frequency() {
         Frequência nas Aulas
       </h1>
 
-      {/* Grid de 3 colunas para os cards pequenos */}
       <div className="grid grid-cols-3 gap-3">
-        {studentHistory.length > 0 ? (
-          studentHistory.map((item, index) => (
+        {processedHistory.length > 0 ? (
+          processedHistory.map((item) => (
             <Dialog key={item.id}>
               <DialogTrigger asChild>
                 <Card
-                  className={`cursor-pointer border-none shadow-sm transition-transform active:scale-95 ${getStatusColor(item.attendance?.status)}`}
+                  className={`cursor-pointer border-none shadow-sm transition-transform active:scale-95 ${getStatusColor(item.status)}`}
                 >
-                  <CardContent className="flex flex-col items-center justify-center p-3 text-white">
-                    <span className="text-[10px] font-bold uppercase opacity-80">
-                      Aula {String(index + 1).padStart(2, '0')}
+                  <CardContent className="flex flex-col items-center justify-center p-3 text-white text-center">
+                    <span className="text-[9px] font-black uppercase opacity-90 leading-none">
+                      {item.baseClassNum
+                        ? `Aula ${String(item.baseClassNum).padStart(2, '0')}`
+                        : '-'}
                     </span>
+                    {item.labelType && (
+                      <span className="text-[10px] font-bold uppercase opacity-80 mb-1">
+                        {item.labelType}
+                      </span>
+                    )}
                     <span className="text-sm font-bold">
-                      {new Date(item.date).toLocaleDateString('pt-BR', {
+                      {item.date.toLocaleDateString('pt-BR', {
                         day: '2-digit',
                         month: '2-digit',
                         timeZone: 'UTC',
@@ -77,26 +160,40 @@ export function Frequency() {
                 </Card>
               </DialogTrigger>
 
-              {/* Popup com detalhes */}
               <DialogContent className="w-[90%] rounded-2xl sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle className="border-b pb-2 text-left">
-                    Detalhes da Aula
+                  <DialogTitle className="border-b pb-2 text-left flex items-center justify-between">
+                    <span>Detalhes da Aula</span>
+                    <Badge variant="outline" className="text-[10px] uppercase">
+                      {item.labelType || 'Extra'}
+                    </Badge>
                   </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 pt-2">
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                      Data
-                    </p>
-                    <p className="text-sm font-semibold text-slate-700">
-                      {new Date(item.date).toLocaleDateString('pt-BR', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        timeZone: 'UTC',
-                      })}
-                    </p>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                        Data
+                      </p>
+                      <p className="text-sm font-semibold text-slate-700">
+                        {item.date.toLocaleDateString('pt-BR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          timeZone: 'UTC',
+                        })}
+                      </p>
+                    </div>
+                    {item.baseClassNum && (
+                      <div className="text-right">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                          Número
+                        </p>
+                        <p className="text-sm font-bold text-primary">
+                          Aula {String(item.baseClassNum).padStart(2, '0')}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -104,36 +201,38 @@ export function Frequency() {
                       Assunto
                     </p>
                     <p className="text-sm leading-relaxed text-slate-600">
-                      {item.subject}
+                      {item.subject || '-'}
                     </p>
                   </div>
 
-                  <div className="flex gap-10">
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                        Página
-                      </p>
-                      <p className="text-sm text-slate-600">
-                        {item.page || '-'}
-                      </p>
+                  {!item.isPractical && (
+                    <div className="flex gap-10">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                          Página
+                        </p>
+                        <p className="text-sm text-slate-600">
+                          {item.page || '-'}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                          Exercício
+                        </p>
+                        <p className="text-sm text-slate-600">
+                          {item.exercise || '-'}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                        Exercício
-                      </p>
-                      <p className="text-sm text-slate-600">
-                        {item.exercise || '-'}
-                      </p>
-                    </div>
-                  </div>
+                  )}
 
                   <div className="pt-2">
                     <Badge
-                      className={`${getStatusColor(item.attendance?.status)} border-none text-white`}
+                      className={`${getStatusColor(item.status)} border-none text-white`}
                     >
-                      {item.attendance?.status === 'PRESENT'
+                      {item.status === 'PRESENT'
                         ? 'Presente'
-                        : item.attendance?.status === 'ABSENT'
+                        : item.status === 'ABSENT'
                           ? 'Ausente'
                           : 'Sem registro'}
                     </Badge>

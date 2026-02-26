@@ -20,6 +20,8 @@ interface StudentAttendance {
   page: string
   exercise: string
   attendance: Attendance | null
+  classNumber?: number
+  status?: string
 }
 
 interface AttendanceResponse {

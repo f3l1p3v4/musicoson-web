@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface Student {
   studentAttendance: {
+    date: string | number | Date
     status: string
   }[]
 }
@@ -14,7 +15,13 @@ type FrequencyStudentProps = {
 }
 
 export function FrequencyStudent({ students }: FrequencyStudentProps) {
-  const allAttendance = students?.flatMap((s) => s.studentAttendance) || []
+  const currentYear = new Date().getFullYear()
+  const allAttendance =
+    students?.flatMap((s) =>
+      s.studentAttendance.filter(
+        (a) => new Date(a.date).getUTCFullYear() === currentYear,
+      ),
+    ) || []
   const totalRecords = allAttendance.length
   const totalPresence = allAttendance.filter((a) => a.status === 'PRESENT').length
 

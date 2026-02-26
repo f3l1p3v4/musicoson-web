@@ -16,10 +16,13 @@ export function Frequency() {
     }
   }, [token, fetchStudentsAttendance])
 
+  const currentYear = new Date().getFullYear()
   const studentData = students?.find((student) => student.id === id)
   const totalAbsences =
     studentData?.studentAttendance?.filter(
-      (attendance) => attendance.status === 'ABSENT',
+      (attendance) =>
+        attendance.status === 'ABSENT' &&
+        new Date(attendance.date).getUTCFullYear() === currentYear,
     ).length || 0
 
   return (
@@ -33,16 +36,16 @@ export function Frequency() {
         <CardContent className="flex flex-col items-start justify-center pt-2">       
           <div 
             className={`mb-3 rounded-full p-2 ${
-              totalAbsences > 3
-                ? 'bg-gray-100'
-                : 'bg-green-100'
+              totalAbsences < 3
+                ? 'bg-green-100'
+                : 'bg-red-100'
             }`}
           >
             <ChartNoAxesCombined
               className={`h-8 w-8 sm:h-10 sm:w-10 ${
-                totalAbsences > 3
-                  ? 'text-black'
-                  : 'text-green-500'
+                totalAbsences < 3
+                  ? 'text-green-500'
+                  : 'text-red-500'
               }`}
             />
           </div>

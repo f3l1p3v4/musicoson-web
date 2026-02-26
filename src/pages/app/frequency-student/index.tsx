@@ -53,8 +53,11 @@ export function FrequencyStudent() {
 
       {students && students.length > 0 ? (
         students.map((student) => {
+          const currentYear = new Date().getFullYear()
           const totalFaltas = student.studentAttendance.filter(
-            (attendance) => attendance.status === 'ABSENT',
+            (attendance) =>
+              attendance.status === 'ABSENT' &&
+              new Date(attendance.date).getUTCFullYear() === currentYear,
           ).length
 
           return (
