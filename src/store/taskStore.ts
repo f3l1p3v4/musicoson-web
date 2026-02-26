@@ -47,6 +47,11 @@ interface TaskStore {
     status: TaskStatus,
     token: string,
   ) => Promise<boolean>
+  updateTask: (
+    id: string,
+    data: Partial<Task>,
+    token: string,
+  ) => Promise<boolean>
   deleteTask: (id: string, token: string) => Promise<boolean>
 }
 
@@ -228,6 +233,28 @@ export const useTaskStore = create<TaskStore>((set) => ({
       return false
     } catch (error) {
       console.error('Error updating task status:', error)
+      return false
+    }
+  },
+
+  updateTask: async (id, data, token) => {
+    try {
+      const response = await api.put(`/tasks/${id}`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (response.status === 200) {
+        set((state) => ({
+          tasks: state.tasks.map((t) => (t.id === id ? { ...t, ...data } : t)),
+        }))
+        return true
+      }
+      return false
+    } catch (error) {
+      console.error('Error updating task:', error)
       return false
     }
   },

@@ -1,7 +1,7 @@
 'use client'
 
 import { format, getYear } from 'date-fns'
-import { Loader2, PlusIcon } from 'lucide-react'
+import { Pencil, Loader2, PlusIcon } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -21,6 +21,7 @@ import { useTaskStore } from '@/store/taskStore'
 import { userStore } from '@/store/userStore'
 
 import { TaskCreate } from './task-create'
+import { TaskEdit } from './task-edit'
 import { StatusTask } from './task-status'
 
 type Status = 'ALL' | 'PENDING' | 'COMPLETED'
@@ -167,123 +168,16 @@ export function Tasks() {
               </div>
             )}
 
-            {filteredTasks.map((task) => {
-              const { cleanTitle, pages, lessons, hymns } = parseTaskTitle(
-                task.title,
-              )
-
-              return (
-                <Dialog key={task.id}>
-                  <DialogTrigger asChild>
-                    <Card className="w-full cursor-pointer shadow-sm">
-                      <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-black uppercase tracking-tighter text-primary">
-                          {task.category}
-                        </CardTitle>
-                        {role === 'INSTRUCTOR' && (
-                          <>
-                            {task.group ? (
-                              <Badge
-                                variant="outline"
-                                className="text-[9px] font-bold"
-                              >
-                                {task.group}
-                              </Badge>
-                            ) : (
-                              task.studentId && (
-                                <Badge
-                                  variant="outline"
-                                  className="text-[9px] font-bold"
-                                >
-                                  {userMap[task.studentId] || '...'}
-                                </Badge>
-                              )
-                            )}
-                          </>
-                        )}
-                        {role === 'STUDENT' && (
-                          <Badge
-                            variant="outline"
-                            className="text-[9px] font-bold"
-                          >
-                            {userMap[task.instructorId] || '...'}
-                          </Badge>
-                        )}
-                      </CardHeader>
-                      <CardContent className="grid gap-2">
-                        <p className="text-sm font-semibold">{cleanTitle}</p>
-
-                        <div className="mt-0.5 flex flex-wrap gap-1">
-                          {pages.length > 0 && (
-                            <Badge
-                              variant="secondary"
-                              className="h-5 border-none bg-blue-100 text-[10px] text-blue-700 hover:bg-blue-100"
-                            >
-                              Página {formatArrayIntoString(pages)}
-                            </Badge>
-                          )}
-                          {lessons.length > 0 && (
-                            <Badge
-                              variant="secondary"
-                              className="h-5 border-none bg-blue-100 text-[10px] text-blue-700 hover:bg-blue-100"
-                            >
-                              Lição {formatArrayIntoString(lessons)}
-                            </Badge>
-                          )}
-                          {hymns.length > 0 && (
-                            <Badge
-                              variant="secondary"
-                              className="h-5 border-none bg-blue-100 text-[10px] text-blue-700 hover:bg-blue-100"
-                            >
-                              Hino {formatArrayIntoString(hymns)}
-                            </Badge>
-                          )}
-                        </div>
-
-                        {task.observation && (
-                          <p className="line-clamp-1 text-xs italic text-muted-foreground">
-                            &quot;{task.observation}&quot;
-                          </p>
-                        )}
-
-                        <div className="mt-2 flex items-center justify-between border-t pt-2 text-[10px] text-muted-foreground">
-                          <div className="flex gap-3">
-                            <span>
-                              Criado:{' '}
-                              {format(new Date(task.createdAt), 'dd/MM/yy')}
-                            </span>
-                            {task.delivery_date && (
-                              <span className="font-bold text-orange-600">
-                                Entrega:{' '}
-                                {format(
-                                  new Date(task.delivery_date),
-                                  'dd/MM/yy',
-                                )}
-                              </span>
-                            )}
-                          </div>
-                          <Badge
-                            variant={
-                              task.status === 'COMPLETED'
-                                ? 'default'
-                                : 'destructive'
-                            }
-                            className={
-                              task.status === 'COMPLETED'
-                                ? 'bg-green-500 hover:bg-green-600'
-                                : ''
-                            }
-                          >
-                            {task.status === 'COMPLETED' ? 'FEITO' : 'PENDENTE'}
-                          </Badge>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </DialogTrigger>
-                  {role === 'INSTRUCTOR' && <StatusTask task={task} />}
-                </Dialog>
-              )
-            })}
+            {filteredTasks.map((task) => (
+              <TaskCard
+                key={task.id}
+                task={task}
+                role={role}
+                userMap={userMap}
+                parseTaskTitle={parseTaskTitle}
+                formatArrayIntoString={formatArrayIntoString}
+              />
+            ))}
           </div>
         )}
       </section>
@@ -303,5 +197,150 @@ export function Tasks() {
         </Dialog>
       )}
     </>
+  )
+}
+
+interface TaskCardProps {
+  task: any
+  role: string | null
+  userMap: Record<string, string>
+  parseTaskTitle: (title: string) => any
+  formatArrayIntoString: (arr: string[]) => string
+}
+
+function TaskCard({
+  task,
+  role,
+  userMap,
+  parseTaskTitle,
+  formatArrayIntoString,
+}: TaskCardProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [view, setView] = useState<'STATUS' | 'EDIT'>('STATUS')
+
+  const { cleanTitle, pages, lessons, hymns } = parseTaskTitle(task.title)
+
+  const handleOpenStatus = () => {
+    if (role !== 'INSTRUCTOR') return
+    setView('STATUS')
+    setIsOpen(true)
+  }
+
+  const handleOpenEdit = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (role !== 'INSTRUCTOR') return
+    setView('EDIT')
+    setIsOpen(true)
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Card
+        className={`w-full shadow-sm transition-all ${
+          role === 'INSTRUCTOR' ? 'cursor-pointer hover:shadow-md' : ''
+        }`}
+        onClick={handleOpenStatus}
+      >
+        <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-black uppercase tracking-tighter text-primary">
+            {task.category}
+          </CardTitle>
+          {role === 'INSTRUCTOR' && (
+            <div className="flex items-center gap-2">
+              {task.group ? (
+                <Badge variant="outline" className="text-[9px] font-bold">
+                  {task.group}
+                </Badge>
+              ) : (
+                task.studentId && (
+                  <Badge variant="outline" className="text-[9px] font-bold">
+                    {userMap[task.studentId] || '...'}
+                  </Badge>
+                )
+              )}
+
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 rounded-full hover:bg-muted"
+                onClick={handleOpenEdit}
+              >
+                <Pencil className="h-3 w-3 text-muted-foreground" />
+              </Button>
+            </div>
+          )}
+          {role === 'STUDENT' && (
+            <Badge variant="outline" className="text-[9px] font-bold">
+              {userMap[task.instructorId] || '...'}
+            </Badge>
+          )}
+        </CardHeader>
+        <CardContent className="grid gap-2">
+          <p className="text-sm font-semibold">{cleanTitle}</p>
+
+          <div className="mt-0.5 flex flex-wrap gap-1">
+            {pages.length > 0 && (
+              <Badge
+                variant="secondary"
+                className="h-5 border-none bg-blue-100 text-[10px] text-blue-700 hover:bg-blue-100"
+              >
+                Página {formatArrayIntoString(pages)}
+              </Badge>
+            )}
+            {lessons.length > 0 && (
+              <Badge
+                variant="secondary"
+                className="h-5 border-none bg-blue-100 text-[10px] text-blue-700 hover:bg-blue-100"
+              >
+                Lição {formatArrayIntoString(lessons)}
+              </Badge>
+            )}
+            {hymns.length > 0 && (
+              <Badge
+                variant="secondary"
+                className="h-5 border-none bg-blue-100 text-[10px] text-blue-700 hover:bg-blue-100"
+              >
+                Hino {formatArrayIntoString(hymns)}
+              </Badge>
+            )}
+          </div>
+
+          {task.observation && (
+            <p className="line-clamp-1 text-xs italic text-muted-foreground">
+              &quot;{task.observation}&quot;
+            </p>
+          )}
+
+          <div className="mt-2 flex items-center justify-between border-t pt-2 text-[10px] text-muted-foreground">
+            <div className="flex gap-3">
+              <span>
+                Criado: {format(new Date(task.createdAt), 'dd/MM/yy')}
+              </span>
+              {task.delivery_date && (
+                <span className="font-bold text-orange-600">
+                  Entrega: {format(new Date(task.delivery_date), 'dd/MM/yy')}
+                </span>
+              )}
+            </div>
+            <Badge
+              variant={task.status === 'COMPLETED' ? 'default' : 'destructive'}
+              className={
+                task.status === 'COMPLETED'
+                  ? 'bg-green-500 hover:bg-green-600'
+                  : ''
+              }
+            >
+              {task.status === 'COMPLETED' ? 'FEITO' : 'PENDENTE'}
+            </Badge>
+          </div>
+        </CardContent>
+      </Card>
+
+      {view === 'STATUS' ? (
+        <StatusTask task={task} />
+      ) : (
+        <TaskEdit task={task} onSuccess={() => setIsOpen(false)} />
+      )}
+    </Dialog>
   )
 }
