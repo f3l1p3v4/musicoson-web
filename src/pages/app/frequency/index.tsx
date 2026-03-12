@@ -1,7 +1,9 @@
 import { useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Dialog,
@@ -16,9 +18,14 @@ import { useStudentHistoryStore } from '@/store/studentHistoryStore'
 
 export function Frequency() {
   const { studentId: studentIdFromParams } = useParams()
-  const { token } = useAuthStore()
+  const { token, id: instructorId, role } = useAuthStore()
   const { studentHistory, fetchStudentHistory } = useStudentHistoryStore()
-  const { students, fetchStudentsAttendance } = useAttendanceStore()
+  const {
+    students,
+    fetchStudentsAttendance,
+    markAttendance,
+    updateAttendance: updateAttendanceStore,
+  } = useAttendanceStore()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -52,6 +59,8 @@ export function Frequency() {
             new Date(a.date).getUTCFullYear() === planYear,
         )
 
+        const realAttendanceId = theoryAtt?.id || item.attendance?.id || null
+
         if (theoryAtt) {
           usedAttendanceIds.add(theoryAtt.id)
         }
@@ -64,6 +73,7 @@ export function Frequency() {
 
         cards.push({
           id: `theory-${item.id}`,
+          attendanceId: realAttendanceId,
           baseClassNum: classNum,
           labelType: isEnsaio ? 'Ensaio GEM' : 'Teoria',
           date: new Date(planDate),
@@ -92,6 +102,7 @@ export function Frequency() {
 
         cards.push({
           id: practiceAtt?.id || `practice-v-${item.id}`,
+          attendanceId: practiceAtt?.id || null,
           baseClassNum: classNum,
           labelType: 'Prática',
           date: practiceDate,
@@ -109,6 +120,7 @@ export function Frequency() {
         const isEnsaio = item.subject?.includes('Ensaio do GEM')
         cards.push({
           id: item.id,
+          attendanceId: item.attendance?.id || null,
           baseClassNum: null,
           labelType: isEnsaio ? 'Ensaio GEM' : '',
           date: new Date(planDate),
@@ -129,6 +141,7 @@ export function Frequency() {
 
         cards.push({
           id: att.id,
+          attendanceId: att.id,
           baseClassNum: baseClassNum > 0 ? baseClassNum : null,
           labelType: isPractical ? 'Prática' : 'Teoria',
           date: new Date(att.date),
@@ -153,6 +166,45 @@ export function Frequency() {
         return 'bg-red-500'
       default:
         return 'bg-gray-400'
+    }
+  }
+
+  const handleStatusUpdate = async (item: any, newStatus: string) => {
+    if (!token || !studentIdFromParams || !instructorId) return
+
+    try {
+      if (item.attendanceId) {
+        const result = await updateAttendanceStore({
+          attendanceId: item.attendanceId,
+          status: newStatus,
+          token,
+        })
+        if (result.success) {
+          toast.success('Presença atualizada com sucesso!')
+          fetchStudentHistory(studentIdFromParams, token)
+          fetchStudentsAttendance(token)
+        } else {
+          toast.error('Erro ao atualizar presença.')
+        }
+      } else {
+        // Criar nova presença
+        const result = await markAttendance({
+          date: item.date.toISOString(),
+          studentId: studentIdFromParams,
+          instructorId,
+          status: newStatus,
+          token,
+        })
+        if (result.success) {
+          toast.success('Presença registrada com sucesso!')
+          fetchStudentHistory(studentIdFromParams, token)
+          fetchStudentsAttendance(token)
+        } else {
+          toast.error('Erro ao registrar presença.')
+        }
+      }
+    } catch (error) {
+      toast.error('Ocorreu um erro ao processar a solicitação.')
     }
   }
 
@@ -276,6 +328,44 @@ export function Frequency() {
                           : 'Sem registro'}
                     </Badge>
                   </div>
+
+                  {role === 'INSTRUCTOR' && (
+                    <div className="mt-4 border-t pt-4">
+                      <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                        Alterar Presença
+                      </p>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant={
+                            item.status === 'PRESENT' ? 'default' : 'outline'
+                          }
+                          className={
+                            item.status === 'PRESENT'
+                              ? 'bg-green-500 hover:bg-green-600'
+                              : ''
+                          }
+                          onClick={() => handleStatusUpdate(item, 'PRESENT')}
+                        >
+                          Presente
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant={
+                            item.status === 'ABSENT' ? 'default' : 'outline'
+                          }
+                          className={
+                            item.status === 'ABSENT'
+                              ? 'bg-red-500 hover:bg-red-600'
+                              : ''
+                          }
+                          onClick={() => handleStatusUpdate(item, 'ABSENT')}
+                        >
+                          Ausente
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </DialogContent>
             </Dialog>
