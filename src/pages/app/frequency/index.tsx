@@ -35,6 +35,7 @@ export function Frequency() {
     const allAttendance = student?.studentAttendance || []
 
     const cards: any[] = []
+    const usedAttendanceIds = new Set<string>()
 
     studentHistory.forEach((item) => {
       // Data original do plano (geralmente Sábado ou Feriado)
@@ -50,6 +51,15 @@ export function Frequency() {
             a.classNumber === classNum &&
             new Date(a.date).getUTCFullYear() === planYear,
         )
+
+        if (theoryAtt) {
+          usedAttendanceIds.add(theoryAtt.id)
+        }
+
+        if (item.attendance?.id) {
+          usedAttendanceIds.add(item.attendance.id)
+        }
+
         const isEnsaio = item.subject?.includes('Ensaio do GEM')
 
         cards.push({
@@ -72,6 +82,10 @@ export function Frequency() {
             new Date(a.date).getUTCFullYear() === planYear,
         )
 
+        if (practiceAtt) {
+          usedAttendanceIds.add(practiceAtt.id)
+        }
+
         // Calcula a data da segunda-feira (Sábado + 2 dias) usando UTC
         const practiceDate = new Date(planDate)
         practiceDate.setUTCDate(practiceDate.getUTCDate() + 2)
@@ -88,6 +102,10 @@ export function Frequency() {
         })
       } else {
         // Item sem número de aula (Feriado, Ensaio, etc.)
+        if (item.attendance?.id) {
+          usedAttendanceIds.add(item.attendance.id)
+        }
+
         const isEnsaio = item.subject?.includes('Ensaio do GEM')
         cards.push({
           id: item.id,
@@ -97,6 +115,27 @@ export function Frequency() {
           status: item.attendance?.status || null,
           subject: item.subject,
           isPractical: false,
+        })
+      }
+    })
+
+    // Adiciona presenças que não foram vinculadas a nenhum plano de aula
+    allAttendance.forEach((att) => {
+      if (!usedAttendanceIds.has(att.id)) {
+        const isPractical = att.classNumber > 90
+        const baseClassNum = isPractical
+          ? att.classNumber - 90
+          : att.classNumber
+
+        cards.push({
+          id: att.id,
+          baseClassNum: baseClassNum > 0 ? baseClassNum : null,
+          labelType: isPractical ? 'Prática' : 'Teoria',
+          date: new Date(att.date),
+          status: att.status,
+          subject: isPractical ? 'Aula Prática' : 'Aula de Teoria',
+          isPractical,
+          isExtra: true, // Marcador para aulas que não vieram do plano
         })
       }
     })
