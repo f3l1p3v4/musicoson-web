@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { useClassPlanStore } from '@/store/ClassPlanStore'
+import { useClassPlanStore } from '@/store/classPlanStore'
 
 type ClassPlanCreateProps = {
   token: string | null

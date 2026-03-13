@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAuthStore } from '@/store/authStore'
-import { useClassPlanStore } from '@/store/ClassPlanStore'
+import { useClassPlanStore } from '@/store/classPlanStore'
 import { useProfileStore } from '@/store/profileStore'
 
 import { ClassPlanCard } from './class-plan-card'
