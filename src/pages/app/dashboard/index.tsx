@@ -15,10 +15,10 @@ export function Dashboard() {
   const { students, fetchStudentsAttendance } = useAttendanceStore()
 
   useEffect(() => {
-    if (token) {
+    if (token && role === 'INSTRUCTOR') {
       fetchStudentsAttendance(token)
     }
-  }, [fetchStudentsAttendance, token])
+  }, [fetchStudentsAttendance, token, role])
 
   const nameParts = userName?.split(' ') || []
   const formattedName =

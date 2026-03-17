@@ -4,24 +4,23 @@ import { NavLink } from 'react-router-dom'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuthStore } from '@/store/authStore'
-import { useAttendanceStore } from '@/store/callListStore' // Ajuste o path se necessário
+import { useStudentHistoryStore } from '@/store/studentHistoryStore'
 
 export function Frequency() {
   const { id, token } = useAuthStore()
-  const { students, fetchStudentsAttendance } = useAttendanceStore()
+  const { studentHistory, fetchStudentHistory } = useStudentHistoryStore()
 
   useEffect(() => {
-    if (token) {
-      fetchStudentsAttendance(token)
+    if (token && id) {
+      fetchStudentHistory(id, token)
     }
-  }, [token, fetchStudentsAttendance])
+  }, [token, id, fetchStudentHistory])
 
   const currentYear = new Date().getFullYear()
-  const studentData = students?.find((student) => student.id === id)
   const totalAbsences =
-    studentData?.studentAttendance?.filter(
+    studentHistory?.filter(
       (attendance) =>
-        attendance.status === 'ABSENT' &&
+        attendance.attendance?.status === 'ABSENT' &&
         new Date(attendance.date).getUTCFullYear() === currentYear,
     ).length || 0
 

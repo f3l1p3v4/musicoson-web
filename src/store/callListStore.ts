@@ -81,7 +81,7 @@ export const useAttendanceStore = create<AttendanceStore>()(
           })
         } catch (error) {
           console.error('Erro ao buscar lista de chamada:', error)
-          throw new Error('Erro ao buscar lista de chamada')
+          // throw removido para evitar Uncaught in Promise (ex: erro 403 para alunos)
         }
       },
 

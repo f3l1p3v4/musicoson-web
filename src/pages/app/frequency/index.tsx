@@ -32,13 +32,23 @@ export function Frequency() {
     if (!token) return
     if (studentIdFromParams) {
       fetchStudentHistory(studentIdFromParams, token)
-      fetchStudentsAttendance(token)
+      if (role === 'INSTRUCTOR') {
+        fetchStudentsAttendance(token)
+      }
     }
-  }, [token, studentIdFromParams, fetchStudentHistory, fetchStudentsAttendance])
+  }, [
+    token,
+    studentIdFromParams,
+    fetchStudentHistory,
+    fetchStudentsAttendance,
+    role,
+  ])
 
   // Processa o histórico para garantir pares de teoria/prática e ordem cronológica
   const processedHistory = useMemo(() => {
-    const student = students?.find((s) => s.id === studentIdFromParams)
+    // Alunos não têm acesso a 'students' (authStore/callListStore).
+    // Toda a informação agora deve vir de `studentHistory`.
+    const student = role === 'INSTRUCTOR' ? students?.find((s) => s.id === studentIdFromParams) : null
     const allAttendance = student?.studentAttendance || []
 
     const cards: any[] = []
@@ -50,24 +60,31 @@ export function Frequency() {
       const planYear = planDate.getUTCFullYear()
       const classNum = item.classNumber
 
+      // Se for uma aula prática vinda no histórico, pula a criação do card base
+      // Ela será encontrada dentro do bloco da teoria correspondente (baseClassNum + 90)
+      // ou cairá no array de Extras no final do processamento.
+      if (classNum && classNum > 90) {
+        return
+      }
+
       if (classNum && classNum > 0) {
-        // 1. Card Teoria (Sábado) - Pega o registro original (classNumber 1, 2, 3...)
-        // Filtra pelo classNumber E pelo ano da aula no plano
-        const theoryAtt = allAttendance.find(
+        // 1. Card Teoria (Sábado)
+        // Para instrusores: tenta buscar no allAttendance. Para alunos: usa o item.attendance do próprio history.
+        let theoryAtt = allAttendance.find(
           (a) =>
             a.classNumber === classNum &&
             new Date(a.date).getUTCFullYear() === planYear,
         )
 
-        const realAttendanceId = theoryAtt?.id || item.attendance?.id || null
+        // Se for aluno e theoryAtt for nulo (porque allAttendance é vazio para aluno), checamos
+        // se o próprio historyItem tem o attendance e é o da teoria.
+        // Assumimos que a branch principal do item é a da Teoria se for < 90
+        const isSelfTheory = classNum < 90
+        
+        const realAttendanceId = theoryAtt?.id || (isSelfTheory ? item.attendance?.id : null)
 
-        if (theoryAtt) {
-          usedAttendanceIds.add(theoryAtt.id)
-        }
-
-        if (item.attendance?.id) {
-          usedAttendanceIds.add(item.attendance.id)
-        }
+        if (theoryAtt) usedAttendanceIds.add(theoryAtt.id)
+        if (item.attendance?.id) usedAttendanceIds.add(item.attendance.id)
 
         const isEnsaio = item.subject?.includes('Ensaio do GEM')
 
@@ -77,39 +94,49 @@ export function Frequency() {
           baseClassNum: classNum,
           labelType: isEnsaio ? 'Ensaio GEM' : 'Teoria',
           date: new Date(planDate),
-          status: theoryAtt?.status || item.attendance?.status || null,
+          status: theoryAtt?.status || (isSelfTheory ? item.attendance?.status : null),
           subject: item.subject,
           page: item.page,
           exercise: item.exercise,
           isPractical: false,
         })
 
-        // 2. Card Prática (Segunda) - Pega o registro +90 (classNumber 91, 92, 93...)
+        // 2. Card Prática (Segunda)
         const practiceClassNum = classNum + 90
+        // Tenta achar em allAttendance (para INSTRUCTOR)
         const practiceAtt = allAttendance.find(
           (a) =>
             a.classNumber === practiceClassNum &&
             new Date(a.date).getUTCFullYear() === planYear,
         )
+        if (practiceAtt) usedAttendanceIds.add(practiceAtt.id)
 
-        if (practiceAtt) {
-          usedAttendanceIds.add(practiceAtt.id)
-        }
+        // Tenta achar em studentHistory (para STUDENT)
+        // Como o BD devolve histórico, a presença prática de +90 também deve vir no próprio fetchStudentHistory
+        // varrendo o studentHistory array onde o classNumber seja classNum + 90
+        const practiceHistoryAtt = studentHistory.find(
+          (sh) => sh.classNumber === practiceClassNum && new Date(sh.date).getUTCFullYear() === planYear
+        )
+        if (practiceHistoryAtt?.attendance?.id) usedAttendanceIds.add(practiceHistoryAtt.attendance.id)
 
-        // Calcula a data da segunda-feira (Sábado + 2 dias) usando UTC
+
+        // Calcula a data da segunda-feira (Sábado + 2 dias)
         const practiceDate = new Date(planDate)
         practiceDate.setUTCDate(practiceDate.getUTCDate() + 2)
 
+        const finalPracticeAttId = practiceAtt?.id || practiceHistoryAtt?.attendance?.id || null
+        const finalPracticeStatus = practiceAtt?.status || practiceHistoryAtt?.attendance?.status || null
+
         cards.push({
-          id: practiceAtt?.id || `practice-v-${item.id}`,
-          attendanceId: practiceAtt?.id || null,
+          id: finalPracticeAttId || `practice-v-${item.id}`,
+          attendanceId: finalPracticeAttId,
           baseClassNum: classNum,
           labelType: 'Prática',
           date: practiceDate,
-          status: practiceAtt?.status || null,
+          status: finalPracticeStatus,
           subject: 'Aula Prática',
           isPractical: true,
-          isVirtual: !practiceAtt,
+          isVirtual: !finalPracticeAttId,
         })
       } else {
         // Item sem número de aula (Feriado, Ensaio, etc.)
@@ -132,20 +159,32 @@ export function Frequency() {
     })
 
     // Adiciona presenças que não foram vinculadas a nenhum plano de aula
-    allAttendance.forEach((att) => {
-      if (!usedAttendanceIds.has(att.id)) {
-        const isPractical = att.classNumber > 90
+    // Para ALUNO, iteramos sobre o próprio studentHistory e pegamos items esquecidos.
+    // Para INSTRUTOR iteramos em allAttendance.
+    const loopArray = role === 'INSTRUCTOR' ? allAttendance : studentHistory
+    
+    loopArray.forEach((attOrHistory: any) => {
+      // Para ALUNO (studentHistory), a presença tá em attOrHistory.attendance
+      // Para INSTRUCTOR (allAttendance), a presença tá direto no attOrHistory (é o proprio objeto Attendance)
+      const isInstructor = role === 'INSTRUCTOR'
+      const attId = isInstructor ? attOrHistory.id : attOrHistory.attendance?.id
+      const attClassNum = isInstructor ? attOrHistory.classNumber : attOrHistory.classNumber
+      const attDate = isInstructor ? attOrHistory.date : (attOrHistory.attendance?.date || attOrHistory.date)
+      const attStatus = isInstructor ? attOrHistory.status : attOrHistory.attendance?.status
+
+      if (attId && !usedAttendanceIds.has(attId)) {
+        const isPractical = attClassNum > 90
         const baseClassNum = isPractical
-          ? att.classNumber - 90
-          : att.classNumber
+          ? attClassNum - 90
+          : attClassNum
 
         cards.push({
-          id: att.id,
-          attendanceId: att.id,
+          id: attId,
+          attendanceId: attId,
           baseClassNum: baseClassNum > 0 ? baseClassNum : null,
           labelType: isPractical ? 'Prática' : 'Teoria',
-          date: new Date(att.date),
-          status: att.status,
+          date: new Date(attDate),
+          status: attStatus,
           subject: isPractical ? 'Aula Prática' : 'Aula de Teoria',
           isPractical,
           isExtra: true, // Marcador para aulas que não vieram do plano
@@ -154,8 +193,25 @@ export function Frequency() {
     })
 
     // Ordenação final cronológica rigorosa por data
-    return cards.sort((a, b) => a.date.getTime() - b.date.getTime())
-  }, [studentHistory, students, studentIdFromParams])
+    // Precisamos de limpar cards duplicados de Prática (pois pra aluno a Pratica também vem no studentHistory loop e gera duplicate card isVirtual + isExtra)
+    const uniqueCards = cards.reduce((acc, current) => {
+      const x = acc.find((item: any) => item.id === current.id || (item.baseClassNum === current.baseClassNum && item.isPractical === current.isPractical));
+      if (!x) {
+        return acc.concat([current]);
+      } else {
+        // Se já existe e a versão guardada é "virtual" mas a version nova tem status real, substitui a virtual pela real
+        if (x.isVirtual && !current.isVirtual && current.attendanceId) {
+          x.id = current.id
+          x.attendanceId = current.attendanceId
+          x.status = current.status
+          x.isVirtual = false
+        }
+        return acc;
+      }
+    }, []);
+
+    return uniqueCards.sort((a: any, b: any) => a.date.getTime() - b.date.getTime())
+  }, [studentHistory, students, studentIdFromParams, role])
 
   // Função para definir a cor baseada no status
   const getStatusColor = (status?: string | null) => {
@@ -182,7 +238,9 @@ export function Frequency() {
         if (result.success) {
           toast.success('Presença atualizada com sucesso!')
           fetchStudentHistory(studentIdFromParams, token)
-          fetchStudentsAttendance(token)
+          if (role === 'INSTRUCTOR') {
+            fetchStudentsAttendance(token)
+          }
         } else {
           toast.error('Erro ao atualizar presença.')
         }
@@ -198,7 +256,9 @@ export function Frequency() {
         if (result.success) {
           toast.success('Presença registrada com sucesso!')
           fetchStudentHistory(studentIdFromParams, token)
-          fetchStudentsAttendance(token)
+          if (role === 'INSTRUCTOR') {
+            fetchStudentsAttendance(token)
+          }
         } else {
           toast.error('Erro ao registrar presença.')
         }

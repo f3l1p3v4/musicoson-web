@@ -60,11 +60,7 @@ export const userStore = create<UserStore>((set) => ({
       set({ users: sortedUsers })
     } catch (error) {
       console.error('Error fetching users:', error)
-      throw new Error(
-        error instanceof AxiosError
-          ? error.response?.data?.message || 'Erro ao buscar usuários'
-          : 'Erro ao buscar usuários',
-      )
+      // throw removido para evitar Uncaught in Promise (ex: erro 403 para alunos)
     }
   },
 

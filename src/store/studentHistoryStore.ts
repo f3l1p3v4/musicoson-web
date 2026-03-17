@@ -75,7 +75,8 @@ export const useStudentHistoryStore = create<StudentHistoryStore>((set) => ({
         },
       )
 
-      console.error('fetchStudentHistory:', response.data)
+      // Temporário para ver formato do payload do aluno e a parte de Prática (+90)
+      console.warn('DEBUG_PAYLOAD_STUDENT_HISTORY:', response.data)
       set({ studentHistory: response.data, isLoading: false })
     } catch (error) {
       let errorMessage = 'Erro ao buscar histórico do aluno'

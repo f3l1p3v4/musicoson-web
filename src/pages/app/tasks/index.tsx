@@ -37,7 +37,7 @@ export function Tasks() {
   const currentYear = new Date().getFullYear().toString()
 
   useEffect(() => {
-    if (token) {
+    if (token && role === 'INSTRUCTOR') {
       fetchUsers(token)
     }
     if (token && role && id) {

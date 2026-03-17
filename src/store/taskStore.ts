@@ -62,7 +62,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
   fetchTasks: async (token: string) => {
     set({ isLoading: true })
     try {
-      const response = await api.get<Task[]>('/tasks', {
+      const response = await api.get<Task[]>('tasks', {
         headers: { Authorization: `Bearer ${token}` },
       })
 
@@ -88,7 +88,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
   fetchTasksByInstructor: async (token: string, instructorId: string) => {
     set({ isLoading: true })
     try {
-      const response = await api.get<Task[]>(`/tasks/instructor`, {
+      const response = await api.get<Task[]>(`tasks/instructor`, {
         params: { instructorId },
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -115,7 +115,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
   fetchTasksByStudent: async (token: string, studentId: string) => {
     set({ isLoading: true })
     try {
-      const response = await api.get<Task[]>(`/tasks/student`, {
+      const response = await api.get<Task[]>(`tasks/student`, {
         params: { studentId },
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -167,7 +167,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
       const taskPromises = Array.from(allStudentIds).map((studentId) => {
         const { studentIds, groups, ...rest } = data
         return api.post<Task>(
-          '/tasks',
+          'tasks',
           { ...rest, studentId },
           {
             headers: {
@@ -213,7 +213,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
   updateTaskStatus: async (id: string, status: TaskStatus, token: string) => {
     try {
       const response = await api.put(
-        `/tasks/${id}/status`,
+        `tasks/${id}/status`,
         { status },
         {
           headers: {
@@ -238,8 +238,10 @@ export const useTaskStore = create<TaskStore>((set) => ({
   },
 
   updateTask: async (id, data, token) => {
+    console.log("ID recebido:", id);
+    console.log("Data recebida:", data);
     try {
-      const response = await api.put(`/tasks/${id}`, data, {
+      const response = await api.put(`tasks/${id}`, data, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -261,7 +263,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
 
   deleteTask: async (id: string, token: string) => {
     try {
-      const response = await api.delete(`/tasks/${id}`, {
+      const response = await api.delete(`tasks/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
 
