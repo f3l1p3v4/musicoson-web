@@ -389,7 +389,7 @@ export function Frequency() {
                     </Badge>
                   </div>
 
-                  {role === 'INSTRUCTOR' && (
+                  {role === 'INSTRUCTOR' && item.status && (
                     <div className="mt-4 border-t pt-4">
                       <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                         Alterar Presença
@@ -402,7 +402,7 @@ export function Frequency() {
                           }
                           className={
                             item.status === 'PRESENT'
-                              ? 'bg-green-500 hover:bg-green-600'
+                              ? 'bg-green-500 hover:bg-green-600 border-none'
                               : ''
                           }
                           onClick={() => handleStatusUpdate(item, 'PRESENT')}
@@ -416,7 +416,7 @@ export function Frequency() {
                           }
                           className={
                             item.status === 'ABSENT'
-                              ? 'bg-red-500 hover:bg-red-600'
+                              ? 'bg-red-500 hover:bg-red-600 border-none'
                               : ''
                           }
                           onClick={() => handleStatusUpdate(item, 'ABSENT')}
