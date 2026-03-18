@@ -1,14 +1,14 @@
 'use client'
 
 import { format, getYear } from 'date-fns'
-import { Pencil, Loader2, PlusIcon } from 'lucide-react'
+import { Pencil, Loader2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Dialog, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog } from '@/components/ui/dialog'
 import {
   Select,
   SelectContent,
@@ -20,7 +20,7 @@ import { useAuthStore } from '@/store/authStore'
 import { useTaskStore } from '@/store/taskStore'
 import { userStore } from '@/store/userStore'
 
-import { TaskCreate } from './task-create'
+//import { TaskCreate } from './task-create'
 import { TaskEdit } from './task-edit'
 import { StatusTask } from './task-status'
 
@@ -135,12 +135,12 @@ export function Tasks() {
   return (
     <>
       <section className="grid gap-4 ">
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-2 w-max rounded py-2 text-[14px] text-slate-600 transition-colors hover:text-black"
-      >
-        ← Voltar
-      </button>
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-2 w-max rounded py-2 text-[14px] text-slate-600 transition-colors hover:text-black"
+        >
+          ← Voltar
+        </button>
         <h1 className="mb-2 text-left text-3xl font-bold">
           {selectedStudentName ? `Tarefas: ${selectedStudentName}` : 'Tarefas'}
         </h1>
@@ -236,9 +236,8 @@ function TaskCard({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <Card
-        className={`w-full shadow-sm transition-all ${
-          role === 'INSTRUCTOR' ? 'cursor-pointer hover:shadow-md' : ''
-        }`}
+        className={`w-full shadow-sm transition-all ${role === 'INSTRUCTOR' ? 'cursor-pointer hover:shadow-md' : ''
+          }`}
         onClick={handleOpenStatus}
       >
         <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">

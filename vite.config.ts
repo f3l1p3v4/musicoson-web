@@ -9,6 +9,11 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      workbox: {
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
+      },
       includeAssets: [
         'favicon.svg',
         'favicon.ico',
@@ -16,6 +21,9 @@ export default defineConfig({
         'apple-touch-icon.png',
       ],
       manifest: {
+        id: '/?source=pwa',
+        start_url: '/',
+        scope: '/',
         name: 'MusicosOn',
         short_name: 'MusicosOn',
         description: 'Gestão para aulas de música',

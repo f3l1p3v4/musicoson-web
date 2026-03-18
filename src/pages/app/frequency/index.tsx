@@ -287,7 +287,7 @@ export function Frequency() {
 
       <div className="grid grid-cols-3 gap-3">
         {processedHistory.length > 0 ? (
-          processedHistory.map((item) => (
+          processedHistory.map((item: any) => (
             <Dialog key={item.id}>
               <DialogTrigger asChild>
                 <Card
