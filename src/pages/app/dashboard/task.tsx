@@ -31,7 +31,7 @@ export function Task() {
   )
 
   return (
-    <NavLink className="flex w-full" to="/tasks">
+    <NavLink className="flex w-full" to="/tasks-student">
       <Card className="flex w-full flex-col transition-colors hover:bg-accent/50">
         <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-semibold sm:text-base">

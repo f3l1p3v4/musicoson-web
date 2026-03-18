@@ -268,6 +268,10 @@ export function Frequency() {
     }
   }
 
+  const currentStudentName = useMemo(() => {
+    return students?.find((s) => s.id === studentIdFromParams)?.name
+  }, [students, studentIdFromParams])
+
   return (
     <section className="flex flex-col">
       <button
@@ -278,7 +282,7 @@ export function Frequency() {
       </button>
 
       <h1 className="mb-6 text-center text-xl font-bold xs:text-3xl">
-        Frequência nas Aulas
+        {currentStudentName ? `Frequência: ${currentStudentName}` : 'Frequência nas Aulas'}
       </h1>
 
       <div className="grid grid-cols-3 gap-3">

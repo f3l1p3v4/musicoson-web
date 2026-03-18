@@ -26,6 +26,7 @@ import { PerfilEdit } from './pages/app/perfil-edit'
 import { ProgramMinimum } from './pages/app/program-minimum'
 // Tasks
 import { Tasks } from './pages/app/tasks'
+import { TasksStudent } from './pages/app/tasks-student'
 // Users
 import { Users } from './pages/app/users'
 // Warnings
@@ -77,7 +78,8 @@ export const router = createBrowserRouter([
       { path: '/perfil-edit', element: <PerfilEdit /> },
       { path: '/program-minimum', element: <ProgramMinimum /> },
       { path: '/class-plan', element: <ClassPlan /> },
-      { path: '/tasks', element: <Tasks /> },
+      { path: '/tasks/:studentId?', element: <Tasks /> },
+      { path: '/tasks-student', element: <TasksStudent /> },
       { path: '/call-list', element: <CallList /> },
       { path: '/warnings', element: <Warnings /> },
       { path: '/alert-frequency', element: <AlertFrequency /> },

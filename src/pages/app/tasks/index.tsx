@@ -3,7 +3,7 @@
 import { format, getYear } from 'date-fns'
 import { Pencil, Loader2, PlusIcon } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -31,10 +31,18 @@ export function Tasks() {
     useTaskStore()
   const { token, role, id } = useAuthStore()
   const { users, fetchUsers } = userStore()
-    const navigate = useNavigate()
+  const navigate = useNavigate()
+  const { studentId } = useParams<{ studentId?: string }>()
 
   const [statusFilter, setStatusFilter] = useState<Status>('PENDING')
   const currentYear = new Date().getFullYear().toString()
+
+  useEffect(() => {
+    // Redirect instructor if viewing the generic tasks page without a studentId
+    if (role === 'INSTRUCTOR' && !studentId) {
+      navigate('/tasks-student', { replace: true })
+    }
+  }, [role, studentId, navigate])
 
   useEffect(() => {
     if (token && role === 'INSTRUCTOR') {
@@ -101,8 +109,11 @@ export function Tasks() {
         const matchesStatus =
           statusFilter === 'ALL' || task.status === statusFilter
         const matchesYear = taskYear === currentYear
+        const matchesStudent = (role === 'INSTRUCTOR' && studentId)
+          ? task.studentId === studentId
+          : true
 
-        return matchesStatus && matchesYear
+        return matchesStatus && matchesYear && matchesStudent
       })
       .sort((a, b) => {
         const dateA = new Date(a.createdAt).getTime()
@@ -117,7 +128,9 @@ export function Tasks() {
 
         return nameA.localeCompare(nameB)
       })
-  }, [tasks, statusFilter, currentYear])
+  }, [tasks, statusFilter, currentYear, role, studentId, userMap])
+
+  const selectedStudentName = studentId ? userMap[studentId] : null
 
   return (
     <>
@@ -128,7 +141,9 @@ export function Tasks() {
       >
         ← Voltar
       </button>
-        <h1 className="mb-2 text-left text-3xl font-bold">Tarefas</h1>
+        <h1 className="mb-2 text-left text-3xl font-bold">
+          {selectedStudentName ? `Tarefas: ${selectedStudentName}` : 'Tarefas'}
+        </h1>
 
         <div className="flex flex-col gap-3">
           <label className="text-[10px] font-semibold uppercase text-muted-foreground">
@@ -181,21 +196,6 @@ export function Tasks() {
           </div>
         )}
       </section>
-
-      {role === 'INSTRUCTOR' && (
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              className="fixed bottom-14 right-6 z-50 bg-primary text-white shadow-lg hover:bg-primary hover:text-white"
-              size="icon"
-            >
-              <PlusIcon className="h-8 w-8" />
-              <span className="sr-only">Criar Novo</span>
-            </Button>
-          </DialogTrigger>
-          <TaskCreate />
-        </Dialog>
-      )}
     </>
   )
 }
