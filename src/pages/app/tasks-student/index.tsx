@@ -43,9 +43,9 @@ export function TasksStudent() {
   const students = useMemo(() => {
     return users.filter((u) => {
       if (u.role !== 'STUDENT') return false
-      
+
       const studentTasks = tasks.filter((task) => task.studentId === u.id)
-      
+
       if (filter === 'ALL') {
         return true
       }

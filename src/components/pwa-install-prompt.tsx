@@ -38,7 +38,7 @@ export function PwaInstallPrompt() {
       <div className="flex flex-col gap-1">
         <h3 className="text-sm font-bold text-foreground">Instalar Aplicativo</h3>
         <p className="text-xs text-muted-foreground leading-tight">
-          Adicione o MusicosOn à sua tela inicial para um acesso mais rápido e imediato.
+          Adicione o MusicosOn à sua tela inicial para um acesso mais rápido.
         </p>
       </div>
 
